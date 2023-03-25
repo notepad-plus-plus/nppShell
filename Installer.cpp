@@ -4,6 +4,7 @@
 #include "ClassicEditWithNppExplorerCommandHandler.h"
 #include "PathHelper.h"
 #include "AclHelper.h"
+#include "RegistryKey.h"
 
 #define GUID_STRING_SIZE 40
 
@@ -14,6 +15,7 @@ using namespace winrt::Windows::Management::Deployment;
 
 using namespace NppShell::Helpers;
 using namespace NppShell::Installer;
+using namespace NppShell::Registry;
 
 extern HMODULE thisModule;
 
@@ -30,37 +32,12 @@ const wstring ShellExtensionKey = L"Software\\Classes\\*\\shellex\\ContextMenuHa
 
 bool IsWindows11Installation()
 {
-    wstring keyName = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
-    wstring valueName = L"CurrentBuildNumber";
+    RegistryKey registryKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion");
+    wstring buildNumberString = registryKey.GetStringValue(L"CurrentBuildNumber");
 
-    bool result = false;
+    const int buildNumber = stoi(buildNumberString);
 
-    HKEY hkey;
-    HRESULT hResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName.c_str(), 0, KEY_READ, &hkey);
-
-    if (hResult == ERROR_SUCCESS)
-    {
-        DWORD cbData = 0;
-        hResult = RegGetValue(hkey, nullptr, valueName.c_str(), RRF_RT_REG_SZ, nullptr, nullptr, &cbData);
-
-        if (hResult == ERROR_SUCCESS)
-        {
-            vector<BYTE> buffer(cbData + 1);
-
-            cbData = (DWORD)buffer.size();
-            hResult = RegGetValue(hkey, nullptr, valueName.c_str(), RRF_RT_REG_SZ, nullptr, &buffer[0], &cbData);
-
-            wstring buildNumberString(reinterpret_cast<wchar_t*>(&buffer[0]));
-
-            const int buildNumber = stoi(buildNumberString);
-
-            result = buildNumber >= FirstWindows11BuildNumber;
-        }
-    }
-
-    RegCloseKey(hkey);
-
-    return result;
+    return buildNumber >= FirstWindows11BuildNumber;
 }
 
 wstring GetCLSIDString()
@@ -90,120 +67,63 @@ wstring GetCLSIDString()
     return guid;
 }
 
-LRESULT RemoveRegistryKeyIfFound(HKEY hive, wstring keyName)
+void inline CleanupRegistry(const wstring& guid)
 {
-    HKEY hkey;
-    const LRESULT lResult = RegOpenKeyEx(hive, keyName.c_str(), 0, KEY_READ, &hkey);
-
-    if (lResult == ERROR_FILE_NOT_FOUND)
+    // First we remove the shell key if it exists.
+    if (RegistryKey::KeyExists(HKEY_LOCAL_MACHINE, ShellKey))
     {
-        // Does not exist, so nothing to remove
-        return ERROR_SUCCESS;
+        RegistryKey registryKey(HKEY_LOCAL_MACHINE, ShellKey, KEY_READ | KEY_WRITE);
+        registryKey.DeleteKey();
     }
 
-    if (lResult != ERROR_SUCCESS)
+    // Then we remove the shell extension key if it exists.
+    if (RegistryKey::KeyExists(HKEY_LOCAL_MACHINE, ShellExtensionKey))
     {
-        return lResult;
+        RegistryKey registryKey(HKEY_LOCAL_MACHINE, ShellExtensionKey, KEY_READ | KEY_WRITE);
+        registryKey.DeleteKey();
     }
 
-    RegCloseKey(hkey);
+    // Then we remove the Notepad++_file key if it exists.
+    if (RegistryKey::KeyExists(HKEY_LOCAL_MACHINE, L"Notepad++_file\\shellex"))
+    {
+        RegistryKey registryKey(HKEY_LOCAL_MACHINE, L"Notepad++_file\\shellex", KEY_READ | KEY_WRITE);
+        registryKey.DeleteKey();
+    }
 
-    return RegDeleteTree(hive, keyName.c_str());
+    // Finally we remove the CLSID key if it exists.
+    if (RegistryKey::KeyExists(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid))
+    {
+        RegistryKey registryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid, KEY_READ | KEY_WRITE);
+        registryKey.DeleteKey();
+    }
 }
 
-LRESULT CreateRegistryKey(const HKEY hive, const wstring& key, const wstring& name, const wstring& value)
+void inline CleanupHack()
 {
-    HKEY regKey;
-    LRESULT lResult = RegCreateKeyEx(hive, key.data(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &regKey, NULL);
-
-    if (lResult != ERROR_SUCCESS)
+    // First we test if the key even exists.
+    if (!RegistryKey::KeyExists(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Classes\\*\\shell\\pintohome"))
     {
-        return lResult;
+        return;
     }
 
-    lResult = RegSetKeyValue(regKey, NULL, name.empty() ? NULL : name.data(), REG_SZ, value.data(), static_cast<DWORD>(value.length() * sizeof TCHAR));
-    
-    RegCloseKey(regKey);
-
-    return lResult;
-}
-
-LRESULT CleanupRegistry(const wstring& guid)
-{
-    constexpr int bufferSize = MAX_PATH + GUID_STRING_SIZE;
-    WCHAR buffer[bufferSize];
-    const auto arraySize = bufferSize * sizeof(WCHAR);
-
-    LRESULT result;
-
-    result = RemoveRegistryKeyIfFound(HKEY_LOCAL_MACHINE, ShellKey);
-
-    if (result != ERROR_SUCCESS)
-    {
-        return result;
-    }
-
-    result = RemoveRegistryKeyIfFound(HKEY_LOCAL_MACHINE, ShellExtensionKey);
-
-    if (result != ERROR_SUCCESS)
-    {
-        return result;
-    }
-
-    StringCbPrintf(buffer, arraySize, L"Notepad++_file\\shellex");
-    result = RemoveRegistryKeyIfFound(HKEY_CLASSES_ROOT, buffer);
-    if (result != ERROR_SUCCESS)
-    {
-        return result;
-    }
-
-    StringCbPrintf(buffer, arraySize, L"Software\\Classes\\CLSID\\%s", guid.c_str());
-    result = RemoveRegistryKeyIfFound(HKEY_LOCAL_MACHINE, buffer);
-    if (result != ERROR_SUCCESS)
-    {
-        return result;
-    }
-
-    return ERROR_SUCCESS;
-}
-
-LRESULT CleanupHack()
-{
-    wstring keyName = L"SOFTWARE\\Classes\\*\\shell\\pintohome";
+    // If it does, we open it and check if the value exists.
     wstring valueName = L"MUIVerb";
+    RegistryKey registryKey(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Classes\\*\\shell\\pintohome", KEY_READ | KEY_WRITE);
 
-    LRESULT result = 0;
-    bool found = false;
-
-    HKEY hkey;
-    HRESULT hResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, keyName.c_str(), 0, KEY_READ, &hkey);
-
-    if (hResult == ERROR_SUCCESS)
+    if (!registryKey.ValueExists(valueName))
     {
-        DWORD cbData = 0;
-        hResult = RegGetValue(hkey, nullptr, valueName.c_str(), RRF_RT_REG_SZ, nullptr, nullptr, &cbData);
-
-        if (hResult == ERROR_SUCCESS)
-        {
-            vector<BYTE> buffer(cbData + 1);
-
-            cbData = (DWORD)buffer.size();
-            hResult = RegGetValue(hkey, nullptr, valueName.c_str(), RRF_RT_REG_SZ, nullptr, &buffer[0], &cbData);
-
-            wstring valueString(reinterpret_cast<wchar_t*>(&buffer[0]));
-
-            found = valueString.find(L"Notepad++") != wstring::npos;
-        }
+        return;
     }
 
-    RegCloseKey(hkey);
+    // Then we get the value and see if it contains the text "Notepad++"
+    wstring currentValue = registryKey.GetStringValue(valueName);
+    bool found = currentValue.find(L"Notepad++") != wstring::npos;
 
+    // If we found the text, we delete the entire key.
     if (found)
     {
-        result = RegDeleteTree(HKEY_LOCAL_MACHINE, keyName.c_str());
+        registryKey.DeleteKey();
     }
-
-    return result;
 }
 
 HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTempDirectory)
@@ -215,7 +135,10 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTe
 
     if (moveToTempDirectory)
     {
+        // First we get the path to the temporary directory.
         GetTempPath(MAX_PATH, &tempPath[0]);
+
+        // Then we get a temporary filename in the temporary directory.
         GetTempFileName(tempPath.c_str(), L"tempFileName", 0, &tempFileName[0]);
 
         // Move the file into the temp directory - it can be moved even when it is loaded into memory and locked.
@@ -320,15 +243,22 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
 
 HRESULT NppShell::Installer::RegisterOldContextMenu()
 {
-    const wstring installationPath = GetContextMenuPath();
+    const wstring contextMenuFullName = GetContextMenuFullName();
     const wstring guid = GetCLSIDString();
 
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"ExplorerCommandHandler", guid.c_str());
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"", L"Notepad++ Context menu");
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"NeverDefault", L"");
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid, L"", L"notepad++");
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid + L"\\InProcServer32", L"", installationPath + L"\\NppShell.dll");
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid + L"\\InProcServer32", L"ThreadingModel", L"Apartment");
+    // First we set the shell extension values.
+    RegistryKey regKeyExtension(HKEY_LOCAL_MACHINE, ShellKey, KEY_READ | KEY_WRITE, true);
+    regKeyExtension.SetStringValue(L"", L"Notepad++ Context menu");
+    regKeyExtension.SetStringValue(L"ExplorerCommandHandler", guid);
+    regKeyExtension.SetStringValue(L"NeverDefault", L"");
+
+    // Then we create the CLSID for the handler with it's values.
+    RegistryKey regKeyClsid(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid, KEY_READ | KEY_WRITE, true);
+    regKeyClsid.SetStringValue(L"", L"notepad++");
+
+    RegistryKey regKeyInProc = regKeyClsid.GetSubKey(L"InProcServer32", true);
+    regKeyInProc.SetStringValue(L"", contextMenuFullName);
+    regKeyInProc.SetStringValue(L"ThreadingModel", L"Apartment");
 
     return S_OK;
 }
@@ -356,8 +286,11 @@ HRESULT NppShell::Installer::Install()
     {
         // We need to unregister the old menu on Windows 11 to prevent double entries in the old menu.
         UnregisterOldContextMenu();
+
+        // Since we are on Windows 11, we unregister the sparse package as well.
         UnregisterSparsePackage();
 
+        // And then we register it again.
         result = RegisterSparsePackage();
     }
 
@@ -377,6 +310,7 @@ HRESULT NppShell::Installer::Install()
     MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.dll", false);
     MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.msix", false);
 
+    // Finally we notify the shell that we have made changes, so it refreshes the context menus.
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
     return result;
@@ -387,6 +321,8 @@ HRESULT NppShell::Installer::Uninstall()
     const bool isWindows11 = IsWindows11Installation();
 
     HRESULT result;
+
+    // We remove the old context menu in all cases, since both Windows 11 and older versions can have it setup if upgrading.
     result = UnregisterOldContextMenu();
 
     if (result != S_OK)
@@ -396,6 +332,7 @@ HRESULT NppShell::Installer::Uninstall()
 
     if (isWindows11)
     {
+        // Since we are on Windows 11, we unregister the sparse package as well.
         result = UnregisterSparsePackage();
 
         if (result != S_OK)
@@ -404,6 +341,7 @@ HRESULT NppShell::Installer::Uninstall()
         }
     }
 
+    // Finally we notify the shell that we have made changes, so it refreshes the context menus.
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
     return S_OK;
@@ -411,8 +349,10 @@ HRESULT NppShell::Installer::Uninstall()
 
 STDAPI CleanupDll()
 {
+    // First we get the full path to this DLL.
     wstring currentFilePath(MAX_PATH, L'\0');
     GetModuleFileName(thisModule, &currentFilePath[0], MAX_PATH);
 
+    // Then we get it moved out of the way and scheduled for deletion.
     return MoveFileToTempAndScheduleDeletion(currentFilePath, true);
 }

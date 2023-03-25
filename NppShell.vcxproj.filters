@@ -19,6 +19,9 @@
     <Filter Include="CommandHandlers\Implementation">
       <UniqueIdentifier>{fc167318-0574-47ba-aa80-a48008ef4b8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Registry">
+      <UniqueIdentifier>{2de5b87c-2f6d-4a04-bd61-1e1be9a91fdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Installer.h">
@@ -48,6 +51,9 @@
     <ClInclude Include="ModernEditWithNppExplorerCommandHandler.h">
       <Filter>CommandHandlers\Implementation</Filter>
     </ClInclude>
+    <ClInclude Include="RegistryKey.h">
+      <Filter>Registry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Installer.cpp">
@@ -74,12 +80,12 @@
     <ClCompile Include="ModernEditWithNppExplorerCommandHandler.cpp">
       <Filter>CommandHandlers\Implementation</Filter>
     </ClCompile>
+    <ClCompile Include="RegistryKey.cpp">
+      <Filter>Registry</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="source.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
 </Project>

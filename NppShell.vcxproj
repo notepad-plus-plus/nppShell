@@ -272,6 +272,7 @@
     <ClInclude Include="Installer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="SharedCounter.h" />
+    <ClInclude Include="RegistryKey.h" />
     <ClInclude Include="SimpleFactory.h" />
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +293,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SharedCounter.cpp" />
+    <ClCompile Include="RegistryKey.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
