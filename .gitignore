@@ -4,3 +4,4 @@ Packaging/NppShell.msix
 *.user
 Debug
 Release
+*.user
