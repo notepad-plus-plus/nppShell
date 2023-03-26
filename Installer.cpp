@@ -204,6 +204,35 @@ LRESULT CleanupHack()
     return result;
 }
 
+HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath)
+{
+    wstring tempPath(MAX_PATH, L'\0');
+    wstring tempFileName(MAX_PATH, L'\0');
+
+    BOOL moveResult;
+
+    GetTempPath(MAX_PATH, &tempPath[0]);
+    GetTempFileName(tempPath.c_str(), L"tempFileName", 0, &tempFileName[0]);
+
+    // Move the file into the temp directory - it can be moved even when it is loaded into memory and locked.
+    moveResult = MoveFileEx(filePath.c_str(), tempFileName.c_str(), MOVEFILE_REPLACE_EXISTING);
+
+    if (!moveResult)
+    {
+        return S_FALSE;
+    }
+
+    // Schedule it to be deleted from the temp directory on the next reboot.
+    moveResult = MoveFileExW(tempFileName.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+
+    if (!moveResult)
+    {
+        return S_FALSE;
+    }
+
+    return S_OK;
+}
+
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     PackageManager packageManager;
@@ -311,6 +340,10 @@ HRESULT NppShell::Installer::Install()
         result = RegisterOldContextMenu();
     }
 
+    // Ensure NppModernShell files have been moved away.
+    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.dll");
+    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.msix");
+
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
     return result;
@@ -345,31 +378,8 @@ HRESULT NppShell::Installer::Uninstall()
 
 STDAPI CleanupDll()
 {
-    wstring tempPath(MAX_PATH, L'\0');
-    wstring tempFileName(MAX_PATH, L'\0');
     wstring currentFilePath(MAX_PATH, L'\0');
-
-    BOOL moveResult;
-
-    GetTempPath(MAX_PATH, &tempPath[0]);
-    GetTempFileName(tempPath.c_str(), L"tempFileName", 0, &tempFileName[0]);
     GetModuleFileName(thisModule, &currentFilePath[0], MAX_PATH);
-    
-    // Move the file into the temp directory - it can be moved even when it is loaded into memory and locked.
-    moveResult = MoveFileEx(currentFilePath.c_str(), tempFileName.c_str(), MOVEFILE_REPLACE_EXISTING);
 
-    if (!moveResult)
-    {
-        return S_FALSE;
-    }
-
-    // Schedule it to be deleted from the temp directory on the next reboot.
-    moveResult = MoveFileExW(tempFileName.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
-
-    if (!moveResult)
-    {
-        return S_FALSE;
-    }
-
-    return S_OK;
+    return MoveFileToTempAndScheduleDeletion(currentFilePath);
 }
