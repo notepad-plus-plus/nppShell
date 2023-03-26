@@ -19,9 +19,11 @@ const wstring SparsePackageName = L"NotepadPlusPlus";
 constexpr int FirstWindows11BuildNumber = 22000;
 
 #ifdef WIN64
-const wstring ShellExtensionKey = L"Software\\Classes\\*\\shell\\ANotepad++64";
+const wstring ShellKey = L"Software\\Classes\\*\\shell\\ANotepad++64";
+const wstring ShellExtensionKey = L"Software\\Classes\\*\\shellex\\ContextMenuHandlers\\ANotepad++64";
 #else
-const wstring ShellExtensionKey = L"Software\\Classes\\*\\shell\\ANotepad++";
+const wstring ShellKey = L"Software\\Classes\\*\\shell\\ANotepad++";
+const wstring ShellExtensionKey = L"Software\\Classes\\*\\shellex\\ContextMenuHandlers\\ANotepad++";
 #endif
 
 bool IsWindows11Installation()
@@ -132,7 +134,14 @@ LRESULT CleanupRegistry(const wstring guid)
 
     LRESULT result;
 
-    result = RemoveRegistryKeyIfFound(HKEY_CLASSES_ROOT, ShellExtensionKey);
+    result = RemoveRegistryKeyIfFound(HKEY_LOCAL_MACHINE, ShellKey);
+
+    if (result != ERROR_SUCCESS)
+    {
+        return result;
+    }
+
+    result = RemoveRegistryKeyIfFound(HKEY_LOCAL_MACHINE, ShellExtensionKey);
 
     if (result != ERROR_SUCCESS)
     {
@@ -260,9 +269,9 @@ HRESULT NppShell::Installer::RegisterOldContextMenu()
     const wstring installationPath = GetInstallationPath();
     const wstring guid = GetCLSIDString();
 
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellExtensionKey, L"ExplorerCommandHandler", guid.c_str());
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellExtensionKey, L"", L"Notepad++ Context menu");
-    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellExtensionKey, L"NeverDefault", L"");
+    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"ExplorerCommandHandler", guid.c_str());
+    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"", L"Notepad++ Context menu");
+    CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"NeverDefault", L"");
     CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid, L"", L"notepad++");
     CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid + L"\\InProcServer32", L"", installationPath + L"\\NppShell.dll");
     CreateRegistryKey(HKEY_LOCAL_MACHINE, L"Software\\Classes\\CLSID\\" + guid + L"\\InProcServer32", L"ThreadingModel", L"Apartment");
