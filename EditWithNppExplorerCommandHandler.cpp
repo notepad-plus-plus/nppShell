@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "EditWithNppExplorerCommandHandler.h"
 
-#include "Helpers.h"
+#include "PathHelper.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Helpers;

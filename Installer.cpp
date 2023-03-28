@@ -2,6 +2,7 @@
 #include "Installer.h"
 
 #include "EditWithNppExplorerCommandHandler.h"
+#include "PathHelper.h"
 
 #define GUID_STRING_SIZE 40
 

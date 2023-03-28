@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Helpers.h"
+#include "PathHelper.h"
 
 using namespace NppShell::Helpers;
 using namespace std::filesystem;
