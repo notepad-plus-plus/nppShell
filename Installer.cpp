@@ -245,6 +245,8 @@ HRESULT ResetAclPermissionsOnApplicationFolder()
 
     // Reset the ACL of the folder where Notepad++ is installed.
     aclHelper.ResetAcl(applicationPath);
+
+    return S_OK;
 }
 
 HRESULT NppShell::Installer::RegisterSparsePackage()
