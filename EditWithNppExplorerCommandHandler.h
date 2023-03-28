@@ -19,6 +19,6 @@ namespace NppShell::CommandHandlers
 
     private:
         const wstring GetNppExecutableFullPath();
-        const wstring GetCommandLine();
+        const wstring GetCommandLine(const wstring& itemName);
     };
 }

@@ -1,8 +1,6 @@
 #pragma once
 #include "pch.h"
 
-#include "Helpers.h"
-
 namespace NppShell::Installer
 {
     HRESULT RegisterOldContextMenu();
@@ -13,6 +11,6 @@ namespace NppShell::Installer
 
     HRESULT Install();
     HRESULT Uninstall();
-
-    STDAPI CleanupDll();
 }
+
+STDAPI CleanupDll();

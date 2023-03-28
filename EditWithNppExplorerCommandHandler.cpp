@@ -1,17 +1,17 @@
 #include "pch.h"
 #include "EditWithNppExplorerCommandHandler.h"
 
-#include "Helpers.h"
+#include "PathHelper.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Helpers;
 
 const wstring EditWithNppExplorerCommandHandler::GetNppExecutableFullPath()
 {
-    const wstring path = GetInstallationPath();
+    const wstring path = GetApplicationPath();
     const wstring fileName = L"\\notepad++.exe";
 
-    return L"\"" + path + fileName + L"\"";
+    return path + fileName;
 }
 
 const wstring EditWithNppExplorerCommandHandler::Title()
@@ -26,12 +26,12 @@ const wstring EditWithNppExplorerCommandHandler::Icon()
     return fileName;
 }
 
-const wstring EditWithNppExplorerCommandHandler::GetCommandLine()
+const wstring EditWithNppExplorerCommandHandler::GetCommandLine(const wstring& itemName)
 {
     const wstring fileName = GetNppExecutableFullPath();
-    const wstring parameters = L"\"%1\"";
+    const wstring parameters = L"\"" + itemName + L"\"";
 
-    return fileName + L" " + parameters;
+    return L"\"" + fileName + L"\" " + parameters;
 }
 
 IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArray, IBindCtx* pbc) noexcept try
@@ -54,8 +54,8 @@ IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiIte
         psiItemArray->GetItemAt(i, &psi);
         RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &itemName));
 
-        std::wstring cmdline = this->GetCommandLine();
-        cmdline = cmdline.replace(cmdline.find(L"%1"), 2, itemName);
+        const wstring applicationName = GetNppExecutableFullPath();
+        const wstring commandLine = GetCommandLine(itemName);
 
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -64,9 +64,10 @@ IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiIte
         si.cb = sizeof(si);
         ZeroMemory(&pi, sizeof(pi));
 
-        wchar_t* command = (LPWSTR)cmdline.c_str();
+        wchar_t* application = (LPWSTR)applicationName.c_str();
+        wchar_t* command = (LPWSTR)commandLine.c_str();
 
-        if (!CreateProcess(nullptr, command, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
+        if (!CreateProcessW(application, command, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
         {
             return S_OK;
         }

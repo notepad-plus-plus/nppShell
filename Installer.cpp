@@ -2,6 +2,8 @@
 #include "Installer.h"
 
 #include "EditWithNppExplorerCommandHandler.h"
+#include "PathHelper.h"
+#include "AclHelper.h"
 
 #define GUID_STRING_SIZE 40
 
@@ -126,7 +128,7 @@ LRESULT CreateRegistryKey(const HKEY hive, const wstring& key, const wstring& na
     return lResult;
 }
 
-LRESULT CleanupRegistry(const wstring guid)
+LRESULT CleanupRegistry(const wstring& guid)
 {
     constexpr int bufferSize = MAX_PATH + GUID_STRING_SIZE;
     WCHAR buffer[bufferSize];
@@ -233,12 +235,24 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath)
     return S_OK;
 }
 
+HRESULT ResetAclPermissionsOnApplicationFolder()
+{
+    // First we get the path where Notepad++ is installed.
+    const wstring applicationPath = GetApplicationPath();
+
+    // Create a new AclHelper
+    AclHelper aclHelper;
+
+    // Reset the ACL of the folder where Notepad++ is installed.
+    aclHelper.ResetAcl(applicationPath);
+}
+
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     PackageManager packageManager;
     AddPackageOptions options;
 
-    const wstring externalLocation = GetInstallationPath();
+    const wstring externalLocation = GetContextMenuPath();
     const wstring sparsePkgPath = externalLocation + L"\\NppShell.msix";
 
     Uri externalUri(externalLocation);
@@ -290,12 +304,15 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
         break;
     }
 
+    // After unregistering the sparse package, we reset the folder permissions of the folder where we are installed.
+    ResetAclPermissionsOnApplicationFolder();
+
     return S_OK;
 }
 
 HRESULT NppShell::Installer::RegisterOldContextMenu()
 {
-    const wstring installationPath = GetInstallationPath();
+    const wstring installationPath = GetContextMenuPath();
     const wstring guid = GetCLSIDString();
 
     CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"ExplorerCommandHandler", guid.c_str());
@@ -340,9 +357,11 @@ HRESULT NppShell::Installer::Install()
         result = RegisterOldContextMenu();
     }
 
-    // Ensure NppModernShell files have been moved away.
-    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.dll");
-    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.msix");
+    // Ensure NppModernShell and NppShell files have been moved away from the main program directory.
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.msix");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.msix");
 
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 

@@ -54,7 +54,7 @@ They need to be there, since the DLL is looking for notepad++.exe in the same di
 ## The installer should, upon installation, install the package.
 When the installer is running, after all the files has been copied into the program files directory, the follow command should be be run to run the register function to register the package:
 ```
-regsvr32.exe /s .\NppShell.dll
+regsvr32.exe /s .\contextmenu\NppShell.dll
 ```
 
 Remember to wait for the regsvr32 process to exit before continuing.
@@ -62,7 +62,7 @@ Remember to wait for the regsvr32 process to exit before continuing.
 ## The installer should, upon uninstallation, uninstall the package.
 When the uninstaller is running, it should run this command to unregister the package:
 ```
-regsvr32.exe /s /u .\NppShell.dll
+regsvr32.exe /s /u .\contextmenu\NppShell.dll
 ```
 
 Here we need to wait for regsvr32 to finish, since if it isn't finished, the dll file will be locked by explorer.

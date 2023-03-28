@@ -10,6 +10,9 @@
     <Filter Include="Factories">
       <UniqueIdentifier>{a0f353df-9c6f-4612-a2d1-98aa7a6d6893}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{9c186a78-bd74-4ac7-b560-e61aeb6d2350}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EditWithNppExplorerCommandHandler.h">
@@ -22,10 +25,15 @@
       <Filter>Installer</Filter>
     </ClInclude>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Helpers.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="SimpleFactory.h">
       <Filter>Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="PathHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="AclHelper.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -39,8 +47,13 @@
       <Filter>Installer</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PathHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="AclHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
