@@ -5,5 +5,6 @@
 
 namespace NppShell::Helpers
 {
-    const wstring GetInstallationPath();
+    const wstring GetApplicationPath();
+    const wstring GetContextMenuPath();
 }

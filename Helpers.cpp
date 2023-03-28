@@ -2,12 +2,25 @@
 #include "Helpers.h"
 
 using namespace NppShell::Helpers;
+using namespace std::filesystem;
 
 extern HMODULE thisModule;
 
-const wstring NppShell::Helpers::GetInstallationPath()
+const path GetThisModulePath()
 {
-    wchar_t path[FILENAME_MAX] = { 0 };
-    GetModuleFileName(thisModule, path, FILENAME_MAX);
-    return std::filesystem::path(path).parent_path().wstring();
+    wchar_t pathBuffer[FILENAME_MAX] = { 0 };
+    GetModuleFileName(thisModule, pathBuffer, FILENAME_MAX);
+    return path(pathBuffer);
+}
+
+const wstring NppShell::Helpers::GetApplicationPath()
+{
+    path modulePath = GetThisModulePath();
+    return modulePath.parent_path().parent_path().wstring();
+}
+
+const wstring NppShell::Helpers::GetContextMenuPath()
+{
+    path modulePath = GetThisModulePath();
+    return modulePath.parent_path().wstring();
 }

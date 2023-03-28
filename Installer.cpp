@@ -238,7 +238,7 @@ HRESULT NppShell::Installer::RegisterSparsePackage()
     PackageManager packageManager;
     AddPackageOptions options;
 
-    const wstring externalLocation = GetInstallationPath();
+    const wstring externalLocation = GetContextMenuPath();
     const wstring sparsePkgPath = externalLocation + L"\\NppShell.msix";
 
     Uri externalUri(externalLocation);
@@ -295,7 +295,7 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
 
 HRESULT NppShell::Installer::RegisterOldContextMenu()
 {
-    const wstring installationPath = GetInstallationPath();
+    const wstring installationPath = GetContextMenuPath();
     const wstring guid = GetCLSIDString();
 
     CreateRegistryKey(HKEY_LOCAL_MACHINE, ShellKey, L"ExplorerCommandHandler", guid.c_str());
@@ -340,9 +340,11 @@ HRESULT NppShell::Installer::Install()
         result = RegisterOldContextMenu();
     }
 
-    // Ensure NppModernShell files have been moved away.
-    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.dll");
-    MoveFileToTempAndScheduleDeletion(GetInstallationPath() + L"\\NppModernShell.msix");
+    // Ensure NppModernShell and NppShell files have been moved away from the main program directory.
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.msix");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.msix");
 
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
