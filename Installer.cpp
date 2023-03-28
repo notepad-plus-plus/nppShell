@@ -126,7 +126,7 @@ LRESULT CreateRegistryKey(const HKEY hive, const wstring& key, const wstring& na
     return lResult;
 }
 
-LRESULT CleanupRegistry(const wstring guid)
+LRESULT CleanupRegistry(const wstring& guid)
 {
     constexpr int bufferSize = MAX_PATH + GUID_STRING_SIZE;
     WCHAR buffer[bufferSize];

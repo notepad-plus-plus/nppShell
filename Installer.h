@@ -13,6 +13,6 @@ namespace NppShell::Installer
 
     HRESULT Install();
     HRESULT Uninstall();
-
-    STDAPI CleanupDll();
 }
+
+STDAPI CleanupDll();

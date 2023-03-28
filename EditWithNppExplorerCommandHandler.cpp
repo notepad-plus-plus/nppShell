@@ -54,8 +54,8 @@ IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiIte
         psiItemArray->GetItemAt(i, &psi);
         RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &itemName));
 
-        wstring applicationName = GetNppExecutableFullPath();
-        wstring commandLine = GetCommandLine(itemName);
+        const wstring applicationName = GetNppExecutableFullPath();
+        const wstring commandLine = GetCommandLine(itemName);
 
         STARTUPINFO si;
         PROCESS_INFORMATION pi;

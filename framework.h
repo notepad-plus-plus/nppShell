@@ -4,7 +4,6 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files
 #include <windows.h>
-#include <pathcch.h>
 #include <shlwapi.h>
 #include <shlobj.h>
 #include <shobjidl_core.h>
@@ -23,4 +22,3 @@
 // Link libraries
 #pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "runtimeobject.lib")
-#pragma comment(lib, "pathcch.lib")
