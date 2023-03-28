@@ -235,7 +235,7 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath)
     return S_OK;
 }
 
-HRESULT ResetAclPermissionsOnApplicationFolder()
+void ResetAclPermissionsOnApplicationFolder()
 {
     // First we get the path where Notepad++ is installed.
     const wstring applicationPath = GetApplicationPath();
