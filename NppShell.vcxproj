@@ -255,6 +255,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AclHelper.h" />
     <ClInclude Include="EditWithNppExplorerCommandHandler.h" />
     <ClInclude Include="ExplorerCommandBase.h" />
     <ClInclude Include="framework.h" />
@@ -264,6 +265,7 @@
     <ClInclude Include="SimpleFactory.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AclHelper.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="ExplorerCommandBase.cpp" />

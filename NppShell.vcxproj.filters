@@ -32,6 +32,9 @@
     <ClInclude Include="PathHelper.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="AclHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditWithNppExplorerCommandHandler.cpp">
@@ -46,6 +49,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="PathHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="AclHelper.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>

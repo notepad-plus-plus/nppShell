@@ -3,6 +3,7 @@
 
 #include "EditWithNppExplorerCommandHandler.h"
 #include "PathHelper.h"
+#include "AclHelper.h"
 
 #define GUID_STRING_SIZE 40
 
@@ -234,6 +235,18 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath)
     return S_OK;
 }
 
+HRESULT ResetAclPermissionsOnApplicationFolder()
+{
+    // First we get the path where Notepad++ is installed.
+    const wstring applicationPath = GetApplicationPath();
+
+    // Create a new AclHelper
+    AclHelper aclHelper;
+
+    // Reset the ACL of the folder where Notepad++ is installed.
+    aclHelper.ResetAcl(applicationPath);
+}
+
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     PackageManager packageManager;
@@ -290,6 +303,9 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
 
         break;
     }
+
+    // After unregistering the sparse package, we reset the folder permissions of the folder where we are installed.
+    ResetAclPermissionsOnApplicationFolder();
 
     return S_OK;
 }
