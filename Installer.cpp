@@ -348,6 +348,17 @@ HRESULT NppShell::Installer::Install()
 
     UnregisterOldContextMenu();
 
+    // Ensure we have removed any old files that might be left behind.
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_01.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_02.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_03.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_04.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_05.dll");
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_06.dll");
+
+    // Since we have unregistered the old context menu, we refresh the shell, just to be sure.
+    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+
     if (isWindows11)
     {
         UnregisterSparsePackage();
