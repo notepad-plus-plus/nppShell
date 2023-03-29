@@ -12,10 +12,10 @@
 #include <Unknwn.h>
 
 // WinRT Header Files
-#include <winrt/base.h>
-#include <winrt/Windows.ApplicationModel.h>
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Windows.Management.Deployment.h>
+#include "winrt/base.h"
+#include "winrt/Windows.ApplicationModel.h"
+#include "winrt/Windows.Foundation.Collections.h"
+#include "winrt/Windows.Management.Deployment.h"
 
 // Windows Implementation Library Header Files
 #include "wil\winrt.h"
