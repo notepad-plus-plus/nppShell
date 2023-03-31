@@ -6,3 +6,4 @@ DllGetClassObject          PRIVATE
 DllRegisterServer          PRIVATE
 DllUnregisterServer        PRIVATE
 CleanupDll                 PRIVATE
+ReloadExplorer             PRIVATE

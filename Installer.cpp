@@ -413,3 +413,30 @@ STDAPI CleanupDll()
 
     return MoveFileToTempAndScheduleDeletion(currentFilePath);
 }
+
+STDAPI ReloadExplorer()
+{
+    // First we locate the correct Explorer process, based on the "Shell_TrayWnd" window class.
+    HWND hwnd = FindWindowW(L"Shell_TrayWnd", NULL);
+    
+    // Then we find the process id of the process owning that window (which is the correct Explorer instance).
+    DWORD pid(0);
+    GetWindowThreadProcessId(hwnd, &pid);
+
+    if (!pid)
+    {
+        return ERROR_FILE_NOT_FOUND;
+    }
+
+    // Now we have the pid of the process, we can open it.
+    HANDLE hExplorer = OpenProcess(PROCESS_TERMINATE, false, pid);
+
+    // Then we just restart the process.
+    // Passing 2 as the 2nd parameter tells Explorer to restart automatically.
+    TerminateProcess(hExplorer, 2);
+
+    // Finally we cleanup by closing the handle.
+    CloseHandle(hExplorer);
+
+    return S_OK;
+}

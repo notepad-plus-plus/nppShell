@@ -14,3 +14,4 @@ namespace NppShell::Installer
 }
 
 STDAPI CleanupDll();
+STDAPI ReloadExplorer();
