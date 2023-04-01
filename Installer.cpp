@@ -206,26 +206,34 @@ LRESULT CleanupHack()
     return result;
 }
 
-HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath)
+HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTempDirectory)
 {
     wstring tempPath(MAX_PATH, L'\0');
     wstring tempFileName(MAX_PATH, L'\0');
 
     BOOL moveResult;
 
-    GetTempPath(MAX_PATH, &tempPath[0]);
-    GetTempFileName(tempPath.c_str(), L"tempFileName", 0, &tempFileName[0]);
-
-    // Move the file into the temp directory - it can be moved even when it is loaded into memory and locked.
-    moveResult = MoveFileEx(filePath.c_str(), tempFileName.c_str(), MOVEFILE_REPLACE_EXISTING);
-
-    if (!moveResult)
+    if (moveToTempDirectory)
     {
-        return S_FALSE;
-    }
+        GetTempPath(MAX_PATH, &tempPath[0]);
+        GetTempFileName(tempPath.c_str(), L"tempFileName", 0, &tempFileName[0]);
 
-    // Schedule it to be deleted from the temp directory on the next reboot.
-    moveResult = MoveFileExW(tempFileName.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+        // Move the file into the temp directory - it can be moved even when it is loaded into memory and locked.
+        moveResult = MoveFileEx(filePath.c_str(), tempFileName.c_str(), MOVEFILE_REPLACE_EXISTING);
+
+        if (!moveResult)
+        {
+            return S_FALSE;
+        }
+
+        // Schedule it to be deleted from the temp directory on the next reboot.
+        moveResult = MoveFileExW(tempFileName.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+    }
+    else
+    {
+        // Schedule it to be deleted on the next reboot, without moving it.
+        moveResult = MoveFileExW(filePath.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
+    }
 
     if (!moveResult)
     {
@@ -332,9 +340,6 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
     // Clean up registry entries.
     CleanupRegistry(guid);
 
-    // Clean up the 8.5 Windows 11 hack if present.
-    CleanupHack();
-
     return S_OK;
 }
 
@@ -344,21 +349,13 @@ HRESULT NppShell::Installer::Install()
 
     HRESULT result;
 
-    UnregisterOldContextMenu();
-
-    // Ensure we have removed any old files that might be left behind.
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_01.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_02.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_03.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_04.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_05.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_06.dll");
-
-    // Since we have unregistered the old context menu, we refresh the shell, just to be sure.
-    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+    // Clean up the 8.5 Windows 11 hack if present.
+    CleanupHack();
 
     if (isWindows11)
     {
+        // We need to unregister the old menu on Windows 11 to prevent double entries in the old menu.
+        UnregisterOldContextMenu();
         UnregisterSparsePackage();
 
         result = RegisterSparsePackage();
@@ -368,11 +365,19 @@ HRESULT NppShell::Installer::Install()
         result = RegisterOldContextMenu();
     }
 
-    // Ensure NppModernShell and NppShell files have been moved away from the main program directory.
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.msix");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.dll");
-    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.msix");
+    // Ensure we schedule old files for removal on next reboot.
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_01.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_02.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_03.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_04.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_05.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_06.dll", false);
+
+    // This include the old NppModernShell and NppShell files from the main program directory.
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell.msix", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.dll", false);
+    MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppModernShell.msix", false);
 
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
@@ -411,5 +416,5 @@ STDAPI CleanupDll()
     wstring currentFilePath(MAX_PATH, L'\0');
     GetModuleFileName(thisModule, &currentFilePath[0], MAX_PATH);
 
-    return MoveFileToTempAndScheduleDeletion(currentFilePath);
+    return MoveFileToTempAndScheduleDeletion(currentFilePath, true);
 }
