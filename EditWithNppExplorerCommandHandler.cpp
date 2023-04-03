@@ -57,6 +57,15 @@ IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiIte
         const wstring applicationName = GetNppExecutableFullPath();
         const wstring commandLine = GetCommandLine(itemName);
 
+        // Cleanup itemName, since we are done with it.
+        if (itemName)
+        {
+            CoTaskMemFree(itemName);
+        }
+
+        // Release the IShellItem pointer, since we are done with it as well.
+        psi->Release();
+
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
 
