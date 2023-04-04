@@ -12,6 +12,9 @@ namespace NppShell::CommandHandlers
 #endif
     {
     public:
+        ClassicEditWithNppExplorerCommandHandler();
+        ~ClassicEditWithNppExplorerCommandHandler();
+
         const EXPCMDSTATE State(IShellItemArray* psiItemArray);
     };
 }

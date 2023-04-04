@@ -68,6 +68,9 @@
     <ClInclude Include="SharedCounter.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="LoggingHelper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Installer.cpp">
@@ -79,6 +82,9 @@
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="AclHelper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="LoggingHelper.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ExplorerCommandBase.cpp">

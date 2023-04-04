@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "SharedCounter.h"
+#include "LoggingHelper.h"
 
 using namespace NppShell::Helpers;
+
+extern LoggingHelper g_loggingHelper;
 
 SharedCounter::SharedCounter()
 {
@@ -9,7 +12,7 @@ SharedCounter::SharedCounter()
     hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), L"Local\\BaseNppExplorerCommandHandlerSharedMemory");
     if (hFileMapping == NULL)
     {
-        MessageBox(NULL, L"Failed to create or open shared memory mapped file", L"SharedCounter", MB_OK | MB_ICONERROR);
+        g_loggingHelper.LogMessage(L"SharedCounter::ctor", L"Failed to create or open shared memory mapped file");
         return;
     }
 
@@ -17,7 +20,7 @@ SharedCounter::SharedCounter()
     hMutex = CreateMutex(NULL, FALSE, L"Local\\BaseNppExplorerCommandHandlerSharedMutex");
     if (hMutex == NULL)
     {
-        MessageBox(NULL, L"Failed to create mutex", L"SharedCounter", MB_OK | MB_ICONERROR);
+        g_loggingHelper.LogMessage(L"SharedCounter::ctor", L"Failed to create mutex");
         CloseHandle(hFileMapping);
         return;
     }
@@ -26,7 +29,7 @@ SharedCounter::SharedCounter()
     pCounter = (int*)MapViewOfFile(hFileMapping, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(int));
     if (pCounter == NULL)
     {
-        MessageBox(NULL, L"Failed to map shared memory", L"SharedCounter", MB_OK | MB_ICONERROR);
+        g_loggingHelper.LogMessage(L"SharedCounter::ctor", L"Failed to map shared memory");
         CloseHandle(hMutex);
         CloseHandle(hFileMapping);
         return;

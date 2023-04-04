@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "ThreadUILanguageChanger.h"
+#include "LoggingHelper.h"
 
 using namespace NppShell::Helpers;
+
+extern LoggingHelper g_loggingHelper;
 
 ThreadUILanguageChanger::ThreadUILanguageChanger(const wstring& languageTag)
 {
@@ -10,12 +13,17 @@ ThreadUILanguageChanger::ThreadUILanguageChanger(const wstring& languageTag)
 
     // Set the new thread UI language setting
     SetThreadLanguage(languageTag);
+
+    g_loggingHelper.LogMessage(L"ThreadUILanguageChanger::ctor", L"Original language: " + m_originalLanguageTag);
+    g_loggingHelper.LogMessage(L"ThreadUILanguageChanger::ctor", L"New language: " + languageTag);
 }
 
 ThreadUILanguageChanger::~ThreadUILanguageChanger()
 {
     // Restore the original thread UI language setting
     SetThreadLanguage(m_originalLanguageTag);
+
+    g_loggingHelper.LogMessage(L"ThreadUILanguageChanger::~tor", L"Original language: " + m_originalLanguageTag);
 }
 
 wstring ThreadUILanguageChanger::GetThreadLanguage()
