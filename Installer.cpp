@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Installer.h"
 
-#include "EditWithNppExplorerCommandHandler.h"
+#include "ClassicEditWithNppExplorerCommandHandler.h"
 #include "PathHelper.h"
 #include "AclHelper.h"
 
@@ -65,7 +65,7 @@ bool IsWindows11Installation()
 
 wstring GetCLSIDString()
 {
-    const auto uuid = __uuidof(NppShell::CommandHandlers::EditWithNppExplorerCommandHandler);
+    const auto uuid = __uuidof(NppShell::CommandHandlers::ClassicEditWithNppExplorerCommandHandler);
 
     LPOLESTR guidString = 0;
     const HRESULT result = StringFromCLSID(uuid, &guidString);
@@ -360,10 +360,8 @@ HRESULT NppShell::Installer::Install()
 
         result = RegisterSparsePackage();
     }
-    else
-    {
-        result = RegisterOldContextMenu();
-    }
+
+    result = RegisterOldContextMenu();
 
     // Ensure we schedule old files for removal on next reboot.
     MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_01.dll", false);

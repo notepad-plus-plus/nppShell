@@ -8,13 +8,6 @@ const EXPCMDFLAGS ExplorerCommandBase::Flags()
     return ECF_DEFAULT;
 }
 
-const EXPCMDSTATE ExplorerCommandBase::State(IShellItemArray* psiItemArray)
-{
-    UNREFERENCED_PARAMETER(psiItemArray);
-
-    return ECS_ENABLED;
-}
-
 IFACEMETHODIMP ExplorerCommandBase::GetTitle(IShellItemArray* psiItemArray, LPWSTR* ppszName)
 {
     UNREFERENCED_PARAMETER(psiItemArray);
@@ -57,7 +50,8 @@ IFACEMETHODIMP ExplorerCommandBase::GetFlags(EXPCMDFLAGS* flags)
     return S_OK;
 }
 
-IFACEMETHODIMP ExplorerCommandBase::GetCanonicalName(GUID* pguidCommandName) {
+IFACEMETHODIMP ExplorerCommandBase::GetCanonicalName(GUID* pguidCommandName)
+{
     *pguidCommandName = GUID_NULL;
     return S_OK;
 }

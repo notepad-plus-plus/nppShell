@@ -263,19 +263,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AclHelper.h" />
-    <ClInclude Include="EditWithNppExplorerCommandHandler.h" />
+    <ClInclude Include="BaseNppExplorerCommandHandler.h" />
+    <ClInclude Include="ClassicEditWithNppExplorerCommandHandler.h" />
     <ClInclude Include="ExplorerCommandBase.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ModernEditWithNppExplorerCommandHandler.h" />
     <ClInclude Include="PathHelper.h" />
     <ClInclude Include="Installer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SharedCounter.h" />
     <ClInclude Include="SimpleFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AclHelper.cpp" />
+    <ClCompile Include="BaseNppExplorerCommandHandler.cpp" />
+    <ClCompile Include="ClassicEditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="EditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="ExplorerCommandBase.cpp" />
+    <ClCompile Include="ModernEditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="PathHelper.cpp" />
     <ClCompile Include="Installer.cpp" />
     <ClCompile Include="pch.cpp">
@@ -286,6 +291,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SharedCounter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
