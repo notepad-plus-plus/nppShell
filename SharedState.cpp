@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "SharedState.h"
+#include "LoggingHelper.h"
 
 using namespace NppShell::Helpers;
+
+extern LoggingHelper g_loggingHelper;
 
 SharedState::SharedState()
 {
@@ -9,7 +12,7 @@ SharedState::SharedState()
     hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(int), L"Local\\BaseNppExplorerCommandHandlerSharedStateMemory");
     if (hFileMapping == NULL)
     {
-        MessageBox(NULL, L"Failed to create or open shared memory mapped file", L"SharedState", MB_OK | MB_ICONERROR);
+        g_loggingHelper.LogMessage(L"SharedState::ctor", L"Failed to create or open shared memory mapped file");
         return;
     }
 
@@ -17,7 +20,7 @@ SharedState::SharedState()
     hMutex = CreateMutex(NULL, FALSE, L"Local\\BaseNppExplorerCommandHandlerSharedStateMutex");
     if (hMutex == NULL)
     {
-        MessageBox(NULL, L"Failed to create mutex", L"SharedState", MB_OK | MB_ICONERROR);
+        g_loggingHelper.LogMessage(L"SharedState::ctor", L"Failed to create mutex");
         CloseHandle(hFileMapping);
         return;
     }
@@ -52,5 +55,6 @@ void SharedState::SetState(CounterState state)
 {
     WaitForSingleObject(hMutex, INFINITE);
     *pState = state;
+    g_loggingHelper.LogMessage(L"SharedState::SetState", L"Set shared state to: " + to_wstring(state));
     ReleaseMutex(hMutex);
 }

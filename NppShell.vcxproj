@@ -267,6 +267,7 @@
     <ClInclude Include="ClassicEditWithNppExplorerCommandHandler.h" />
     <ClInclude Include="ExplorerCommandBase.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LoggingHelper.h" />
     <ClInclude Include="ModernEditWithNppExplorerCommandHandler.h" />
     <ClInclude Include="PathHelper.h" />
     <ClInclude Include="Installer.h" />
@@ -284,6 +285,7 @@
     <ClCompile Include="ClassicEditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ExplorerCommandBase.cpp" />
+    <ClCompile Include="LoggingHelper.cpp" />
     <ClCompile Include="ModernEditWithNppExplorerCommandHandler.cpp" />
     <ClCompile Include="PathHelper.cpp" />
     <ClCompile Include="Installer.cpp" />

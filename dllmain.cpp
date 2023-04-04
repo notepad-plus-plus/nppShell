@@ -4,11 +4,14 @@
 #include "SimpleFactory.h"
 #include "ClassicEditWithNppExplorerCommandHandler.h"
 #include "ModernEditWithNppExplorerCommandHandler.h"
+#include "LoggingHelper.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Factories;
+using namespace NppShell::Helpers;
 
 HMODULE g_module;
+LoggingHelper g_loggingHelper;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
