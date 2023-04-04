@@ -9,7 +9,7 @@ namespace NppShell::CommandHandlers
         virtual const wstring Title() = 0;
         virtual const wstring Icon() = 0;
         virtual const EXPCMDFLAGS Flags();
-        virtual const EXPCMDSTATE State(IShellItemArray* psiItemArray);
+        virtual const EXPCMDSTATE State(IShellItemArray* psiItemArray) = 0;
 
         IFACEMETHODIMP GetTitle(IShellItemArray* psiItemArray, LPWSTR* ppszName);
         IFACEMETHODIMP GetIcon(IShellItemArray* psiItemArray, LPWSTR* ppszIcon);

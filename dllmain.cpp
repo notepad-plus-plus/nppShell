@@ -2,7 +2,8 @@
 
 #include "Installer.h"
 #include "SimpleFactory.h"
-#include "EditWithNppExplorerCommandHandler.h"
+#include "ClassicEditWithNppExplorerCommandHandler.h"
+#include "ModernEditWithNppExplorerCommandHandler.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Factories;
@@ -54,9 +55,13 @@ _Use_decl_annotations_ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LP
 {
     *ppv = nullptr;
 
-    if (rclsid == __uuidof(EditWithNppExplorerCommandHandler))
+    if (rclsid == __uuidof(ClassicEditWithNppExplorerCommandHandler))
     {
-        return winrt::make<SimpleFactory<EditWithNppExplorerCommandHandler>>().as(riid, ppv);
+        return winrt::make<SimpleFactory<ClassicEditWithNppExplorerCommandHandler>>().as(riid, ppv);
+    }
+    else if (rclsid == __uuidof(ModernEditWithNppExplorerCommandHandler))
+    {
+        return winrt::make<SimpleFactory<ModernEditWithNppExplorerCommandHandler>>().as(riid, ppv);
     }
     else
     {

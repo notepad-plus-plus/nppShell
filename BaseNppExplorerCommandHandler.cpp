@@ -1,12 +1,17 @@
 #include "pch.h"
-#include "EditWithNppExplorerCommandHandler.h"
+#include "BaseNppExplorerCommandHandler.h"
 
 #include "PathHelper.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Helpers;
 
-const wstring EditWithNppExplorerCommandHandler::GetNppExecutableFullPath()
+BaseNppExplorerCommandHandler::BaseNppExplorerCommandHandler()
+{
+    counter = make_unique<SharedCounter>();
+}
+
+const wstring BaseNppExplorerCommandHandler::GetNppExecutableFullPath()
 {
     const wstring path = GetApplicationPath();
     const wstring fileName = L"\\notepad++.exe";
@@ -14,19 +19,19 @@ const wstring EditWithNppExplorerCommandHandler::GetNppExecutableFullPath()
     return path + fileName;
 }
 
-const wstring EditWithNppExplorerCommandHandler::Title()
+const wstring BaseNppExplorerCommandHandler::Title()
 {
     return L"Edit with Notepad++";
 }
 
-const wstring EditWithNppExplorerCommandHandler::Icon()
+const wstring BaseNppExplorerCommandHandler::Icon()
 {
     const wstring fileName = GetNppExecutableFullPath();
 
     return fileName;
 }
 
-const wstring EditWithNppExplorerCommandHandler::GetCommandLine(const wstring& itemName)
+const wstring BaseNppExplorerCommandHandler::GetCommandLine(const wstring& itemName)
 {
     const wstring fileName = GetNppExecutableFullPath();
     const wstring parameters = L"\"" + itemName + L"\"";
@@ -34,7 +39,7 @@ const wstring EditWithNppExplorerCommandHandler::GetCommandLine(const wstring& i
     return L"\"" + fileName + L"\" " + parameters;
 }
 
-IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArray, IBindCtx* pbc) noexcept try
+IFACEMETHODIMP BaseNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArray, IBindCtx* pbc) noexcept try
 {
     UNREFERENCED_PARAMETER(pbc);
 
@@ -88,3 +93,10 @@ IFACEMETHODIMP EditWithNppExplorerCommandHandler::Invoke(IShellItemArray* psiIte
     return S_OK;
 }
 CATCH_RETURN();
+
+const EXPCMDSTATE BaseNppExplorerCommandHandler::State(IShellItemArray* psiItemArray)
+{
+    UNREFERENCED_PARAMETER(psiItemArray);
+
+    throw L"State must be overridden in all implementations";
+}

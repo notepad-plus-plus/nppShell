@@ -13,14 +13,14 @@
     <Filter Include="Helpers">
       <UniqueIdentifier>{9c186a78-bd74-4ac7-b560-e61aeb6d2350}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CommandHandlers\Base">
+      <UniqueIdentifier>{7a045eaf-b500-484e-998a-394c98da10f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CommandHandlers\Implementation">
+      <UniqueIdentifier>{fc167318-0574-47ba-aa80-a48008ef4b8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="EditWithNppExplorerCommandHandler.h">
-      <Filter>CommandHandlers</Filter>
-    </ClInclude>
-    <ClInclude Include="ExplorerCommandBase.h">
-      <Filter>CommandHandlers</Filter>
-    </ClInclude>
     <ClInclude Include="Installer.h">
       <Filter>Installer</Filter>
     </ClInclude>
@@ -35,14 +35,21 @@
     <ClInclude Include="AclHelper.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="SharedCounter.h" />
+    <ClInclude Include="ExplorerCommandBase.h">
+      <Filter>CommandHandlers\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseNppExplorerCommandHandler.h">
+      <Filter>CommandHandlers\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicEditWithNppExplorerCommandHandler.h">
+      <Filter>CommandHandlers\Implementation</Filter>
+    </ClInclude>
+    <ClInclude Include="ModernEditWithNppExplorerCommandHandler.h">
+      <Filter>CommandHandlers\Implementation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EditWithNppExplorerCommandHandler.cpp">
-      <Filter>CommandHandlers</Filter>
-    </ClCompile>
-    <ClCompile Include="ExplorerCommandBase.cpp">
-      <Filter>CommandHandlers</Filter>
-    </ClCompile>
     <ClCompile Include="Installer.cpp">
       <Filter>Installer</Filter>
     </ClCompile>
@@ -53,6 +60,19 @@
     </ClCompile>
     <ClCompile Include="AclHelper.cpp">
       <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedCounter.cpp" />
+    <ClCompile Include="ExplorerCommandBase.cpp">
+      <Filter>CommandHandlers\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseNppExplorerCommandHandler.cpp">
+      <Filter>CommandHandlers\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicEditWithNppExplorerCommandHandler.cpp">
+      <Filter>CommandHandlers\Implementation</Filter>
+    </ClCompile>
+    <ClCompile Include="ModernEditWithNppExplorerCommandHandler.cpp">
+      <Filter>CommandHandlers\Implementation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
