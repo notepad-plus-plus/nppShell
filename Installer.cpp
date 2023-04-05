@@ -289,6 +289,17 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
     return S_OK;
 }
 
+void ReRegisterSparsePackage()
+{
+    winrt::init_apartment();
+
+    // Since we are on Windows 11, we unregister the sparse package as well.
+    UnregisterSparsePackage();
+
+    // And then we register it again.
+    RegisterSparsePackage();
+}
+
 HRESULT NppShell::Installer::Install()
 {
     const bool isWindows11 = IsWindows11Installation();
@@ -303,11 +314,9 @@ HRESULT NppShell::Installer::Install()
         // We need to unregister the old menu on Windows 11 to prevent double entries in the old menu.
         UnregisterOldContextMenu();
 
-        // Since we are on Windows 11, we unregister the sparse package as well.
-        UnregisterSparsePackage();
-
-        // And then we register it again.
-        result = RegisterSparsePackage();
+        // To register the sparse package, we need to do it on another thread due to WinRT requirements.
+        thread reRegisterThread(ReRegisterSparsePackage);
+        reRegisterThread.join();
     }
 
     result = RegisterOldContextMenu();
