@@ -8,4 +8,5 @@ namespace NppShell::Helpers
     const wstring GetApplicationPath();
     const wstring GetContextMenuPath();
     const wstring GetContextMenuFullName();
+    const wstring GetExecutingModuleName();
 }
