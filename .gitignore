@@ -5,3 +5,4 @@ Packaging/NppShell.msix
 Debug
 Release
 *.user
+*.aps
