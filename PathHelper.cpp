@@ -30,3 +30,15 @@ const wstring NppShell::Helpers::GetContextMenuFullName()
     path modulePath = GetThisModulePath();
     return modulePath.wstring();
 }
+
+const wstring NppShell::Helpers::GetExecutingModuleName()
+{
+    wchar_t pathBuffer[FILENAME_MAX] = { 0 };
+    GetModuleFileNameW(NULL, pathBuffer, FILENAME_MAX);
+    PathStripPathW(pathBuffer);
+
+    wstring moduleName(pathBuffer);
+    transform(moduleName.begin(), moduleName.end(), moduleName.begin(), towlower);
+
+    return moduleName;
+}

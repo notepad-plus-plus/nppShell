@@ -18,6 +18,7 @@ using namespace NppShell::Installer;
 using namespace NppShell::Registry;
 
 extern HMODULE thisModule;
+extern thread ensureRegistrationThread;
 
 const wstring SparsePackageName = L"NotepadPlusPlus";
 constexpr int FirstWindows11BuildNumber = 22000;
@@ -178,6 +179,33 @@ void ResetAclPermissionsOnApplicationFolder()
     aclHelper.ResetAcl(applicationPath);
 }
 
+Package GetSparsePackage()
+{
+    PackageManager packageManager;
+    IIterable<Package> packages;
+
+    try
+    {
+        packages = packageManager.FindPackagesForUser(L"");
+    }
+    catch (winrt::hresult_error)
+    {
+        return NULL;
+    }
+
+    for (const Package& package : packages)
+    {
+        if (package.Id().Name() != SparsePackageName)
+        {
+            continue;
+        }
+
+        return package;
+    }
+
+    return NULL;
+}
+
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     PackageManager packageManager;
@@ -207,32 +235,20 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
     PackageManager packageManager;
     IIterable<Package> packages;
 
-    try
+    Package package = GetSparsePackage();
+    
+    if (package == NULL)
     {
-        packages = packageManager.FindPackagesForUser(L"");
-    }
-    catch (winrt::hresult_error const& ex)
-    {
-        return ex.code();
+        return S_FALSE;
     }
 
-    for (const Package& package : packages)
+    winrt::hstring fullName = package.Id().FullName();
+    auto deploymentOperation = packageManager.RemovePackageAsync(fullName, RemovalOptions::None);
+    auto deployResult = deploymentOperation.get();
+
+    if (!SUCCEEDED(deployResult.ExtendedErrorCode()))
     {
-        if (package.Id().Name() != SparsePackageName)
-        {
-            continue;
-        }
-
-        winrt::hstring fullName = package.Id().FullName();
-        auto deploymentOperation = packageManager.RemovePackageAsync(fullName, RemovalOptions::None);
-        auto deployResult = deploymentOperation.get();
-
-        if (!SUCCEEDED(deployResult.ExtendedErrorCode()))
-        {
-            return deployResult.ExtendedErrorCode();
-        }
-
-        break;
+        return deployResult.ExtendedErrorCode();
     }
 
     // After unregistering the sparse package, we reset the folder permissions of the folder where we are installed.
@@ -345,6 +361,41 @@ HRESULT NppShell::Installer::Uninstall()
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
 
     return S_OK;
+}
+
+void EnsureRegistrationOnCurrentUserWorker()
+{
+    // Initialize the WinRT apartment.
+    winrt::init_apartment();
+
+    // Get the package to check if it is already installed for the current user.
+    Package existingPackage = GetSparsePackage();
+
+    if (existingPackage == NULL)
+    {
+        // The package is not installed for the current user - but we know that Notepad++ is.
+        // If it wasn't, this code wouldn't be running, so it is safe to just register the package.
+        RegisterSparsePackage();
+
+        // Finally we notify the shell that we have made changes, so it reloads the right click menu items.
+        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+    }
+}
+
+void NppShell::Installer::EnsureRegistrationOnCurrentUser()
+{
+    // First we find the name of the process the DLL is being loaded into.
+    wstring moduleName = GetExecutingModuleName();
+
+    if (moduleName == L"explorer.exe")
+    {
+        // We are being loaded into explorer.exe, so we can continue.
+        // Explorer.exe only loads the DLL on the first time a user right-clicks a file
+        // after that it stays in memory for the rest of their session.
+        // Since we are here, we spawn a thread and call the EnsureRegistrationOnCurrentUserWorker function.
+        ensureRegistrationThread = thread(EnsureRegistrationOnCurrentUserWorker);
+        ensureRegistrationThread.detach();
+    }
 }
 
 STDAPI CleanupDll()

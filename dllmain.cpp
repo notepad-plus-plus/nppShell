@@ -9,6 +9,7 @@ using namespace NppShell::CommandHandlers;
 using namespace NppShell::Factories;
 
 HMODULE thisModule;
+thread ensureRegistrationThread;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -18,6 +19,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     {
         case DLL_PROCESS_ATTACH:
             thisModule = hModule;
+            NppShell::Installer::EnsureRegistrationOnCurrentUser();
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
