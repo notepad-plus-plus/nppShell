@@ -1,10 +1,13 @@
 #include "pch.h"
+#include "resource.h"
 #include "BaseNppExplorerCommandHandler.h"
 
 #include "PathHelper.h"
 
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Helpers;
+
+extern HMODULE thisModule;
 
 BaseNppExplorerCommandHandler::BaseNppExplorerCommandHandler()
 {
@@ -21,7 +24,17 @@ const wstring BaseNppExplorerCommandHandler::GetNppExecutableFullPath()
 
 const wstring BaseNppExplorerCommandHandler::Title()
 {
-    return L"Edit with Notepad++";
+    // A buffer size of 1024 should be enough to hold the for all languages.
+    constexpr int bufferSize = 1024;
+
+    // Buffer to store the string resource into.
+    WCHAR buffer[bufferSize];
+
+    // Load the string from the resource matching the current language.
+    LoadStringW(thisModule, IDS_EDIT_WITH_NOTEPADPLUSPLUS, buffer, bufferSize);
+
+    // Finally we convert the buffer into a wstring that we can return.
+    return wstring(buffer);
 }
 
 const wstring BaseNppExplorerCommandHandler::Icon()
