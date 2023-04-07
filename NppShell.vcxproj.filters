@@ -54,6 +54,10 @@
     <ClInclude Include="RegistryKey.h">
       <Filter>Registry</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ThreadUILanguageChanger.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Installer.cpp">
@@ -83,9 +87,18 @@
     <ClCompile Include="RegistryKey.cpp">
       <Filter>Registry</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadUILanguageChanger.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="source.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NppShell.rc" />
   </ItemGroup>
 </Project>

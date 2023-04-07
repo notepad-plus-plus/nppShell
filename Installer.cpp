@@ -17,7 +17,8 @@ using namespace NppShell::Helpers;
 using namespace NppShell::Installer;
 using namespace NppShell::Registry;
 
-extern HMODULE thisModule;
+
+extern HMODULE g_module;
 extern thread ensureRegistrationThread;
 
 const wstring SparsePackageName = L"NotepadPlusPlus";
@@ -402,7 +403,7 @@ STDAPI CleanupDll()
 {
     // First we get the full path to this DLL.
     wstring currentFilePath(MAX_PATH, L'\0');
-    GetModuleFileName(thisModule, &currentFilePath[0], MAX_PATH);
+    GetModuleFileName(g_module, &currentFilePath[0], MAX_PATH);
 
     // Then we get it moved out of the way and scheduled for deletion.
     return MoveFileToTempAndScheduleDeletion(currentFilePath, true);

@@ -275,6 +275,7 @@
     <ClInclude Include="SharedCounter.h" />
     <ClInclude Include="RegistryKey.h" />
     <ClInclude Include="SimpleFactory.h" />
+    <ClInclude Include="ThreadUILanguageChanger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AclHelper.cpp" />
@@ -295,6 +296,7 @@
     </ClCompile>
     <ClCompile Include="SharedCounter.cpp" />
     <ClCompile Include="RegistryKey.cpp" />
+    <ClCompile Include="ThreadUILanguageChanger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
