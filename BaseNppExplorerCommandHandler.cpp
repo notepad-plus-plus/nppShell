@@ -7,7 +7,7 @@
 using namespace NppShell::CommandHandlers;
 using namespace NppShell::Helpers;
 
-extern HMODULE thisModule;
+extern HMODULE g_module;
 
 BaseNppExplorerCommandHandler::BaseNppExplorerCommandHandler()
 {
@@ -31,7 +31,7 @@ const wstring BaseNppExplorerCommandHandler::Title()
     WCHAR buffer[bufferSize];
 
     // Load the string from the resource matching the current language.
-    LoadStringW(thisModule, IDS_EDIT_WITH_NOTEPADPLUSPLUS, buffer, bufferSize);
+    LoadStringW(g_module, IDS_EDIT_WITH_NOTEPADPLUSPLUS, buffer, bufferSize);
 
     // Finally we convert the buffer into a wstring that we can return.
     return wstring(buffer);
