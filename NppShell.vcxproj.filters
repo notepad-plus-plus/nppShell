@@ -22,6 +22,9 @@
     <Filter Include="Registry">
       <UniqueIdentifier>{2de5b87c-2f6d-4a04-bd61-1e1be9a91fdf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{31c51ab1-0502-40df-b93e-2932b487656e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Installer.h">
@@ -38,7 +41,6 @@
     <ClInclude Include="AclHelper.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="SharedCounter.h" />
     <ClInclude Include="ExplorerCommandBase.h">
       <Filter>CommandHandlers\Base</Filter>
     </ClInclude>
@@ -54,8 +56,16 @@
     <ClInclude Include="RegistryKey.h">
       <Filter>Registry</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="ThreadUILanguageChanger.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedState.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedCounter.h">
       <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,7 +81,6 @@
     <ClCompile Include="AclHelper.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="SharedCounter.cpp" />
     <ClCompile Include="ExplorerCommandBase.cpp">
       <Filter>CommandHandlers\Base</Filter>
     </ClCompile>
@@ -90,6 +99,12 @@
     <ClCompile Include="ThreadUILanguageChanger.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="SharedState.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedCounter.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -99,6 +114,8 @@
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="NppShell.rc" />
+    <ResourceCompile Include="NppShell.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

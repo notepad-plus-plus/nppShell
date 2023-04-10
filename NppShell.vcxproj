@@ -273,6 +273,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SharedCounter.h" />
+    <ClInclude Include="SharedState.h" />
     <ClInclude Include="RegistryKey.h" />
     <ClInclude Include="SimpleFactory.h" />
     <ClInclude Include="ThreadUILanguageChanger.h" />
@@ -295,6 +296,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="SharedCounter.cpp" />
+    <ClCompile Include="SharedState.cpp" />
     <ClCompile Include="RegistryKey.cpp" />
     <ClCompile Include="ThreadUILanguageChanger.cpp" />
   </ItemGroup>

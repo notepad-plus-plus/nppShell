@@ -1,17 +1,21 @@
 #include "pch.h"
 #include "ClassicEditWithNppExplorerCommandHandler.h"
 
+#include "SharedState.h"
+
 using namespace NppShell::CommandHandlers;
 
 const EXPCMDSTATE ClassicEditWithNppExplorerCommandHandler::State(IShellItemArray* psiItemArray)
 {
     UNREFERENCED_PARAMETER(psiItemArray);
 
-    int state = counter->GetValue();
+    // First we get the current state, before we clear it.
+    CounterState currentState = state->GetState();
+    state->SetState(NotSet);
 
-    if (state == 3 || state == 5)
+    // If it is set, it means the State function has been called in the Modern command handler last, which means we should hide this one.
+    if (currentState == CounterState::Set)
     {
-        // This is on Windows 11, with both the modern and classic being shows, so we hide this one.
         return ECS_HIDDEN;
     }
 

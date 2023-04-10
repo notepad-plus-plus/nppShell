@@ -2,7 +2,8 @@
 
 namespace NppShell::Helpers
 {
-    class SharedCounter {
+    class SharedCounter
+    {
     public:
         SharedCounter();
         ~SharedCounter();
