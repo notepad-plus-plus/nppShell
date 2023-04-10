@@ -13,6 +13,7 @@ extern HMODULE g_module;
 BaseNppExplorerCommandHandler::BaseNppExplorerCommandHandler()
 {
     counter = make_unique<SharedCounter>();
+    state = make_unique<SharedState>();
 }
 
 const wstring BaseNppExplorerCommandHandler::GetNppExecutableFullPath()

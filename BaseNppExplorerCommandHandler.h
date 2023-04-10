@@ -1,6 +1,7 @@
 #pragma once
 #include "ExplorerCommandBase.h"
 #include "SharedCounter.h"
+#include "SharedState.h"
 
 using namespace NppShell::Helpers;
 
@@ -24,5 +25,6 @@ namespace NppShell::CommandHandlers
 
     protected:
         unique_ptr<SharedCounter> counter;
+        unique_ptr<SharedState> state;
     };
 }

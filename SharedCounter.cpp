@@ -39,7 +39,8 @@ SharedCounter::SharedCounter()
     ReleaseMutex(hMutex);
 }
 
-SharedCounter::~SharedCounter() {
+SharedCounter::~SharedCounter()
+{
     // Decrement the shared counter
     WaitForSingleObject(hMutex, INFINITE);
     *pCounter -= 1;
@@ -53,6 +54,7 @@ SharedCounter::~SharedCounter() {
     CloseHandle(hFileMapping);
 }
 
-int SharedCounter::GetValue() const {
+int SharedCounter::GetValue() const
+{
     return localValue;
 }
