@@ -390,12 +390,17 @@ void NppShell::Installer::EnsureRegistrationOnCurrentUser()
 
     if (moduleName == L"explorer.exe")
     {
-        // We are being loaded into explorer.exe, so we can continue.
-        // Explorer.exe only loads the DLL on the first time a user right-clicks a file
-        // after that it stays in memory for the rest of their session.
-        // Since we are here, we spawn a thread and call the EnsureRegistrationOnCurrentUserWorker function.
-        ensureRegistrationThread = thread(EnsureRegistrationOnCurrentUserWorker);
-        ensureRegistrationThread.detach();
+        const bool isWindows11 = IsWindows11Installation();
+
+        if (isWindows11)
+        {
+            // We are being loaded into explorer.exe, so we can continue.
+            // Explorer.exe only loads the DLL on the first time a user right-clicks a file
+            // after that it stays in memory for the rest of their session.
+            // Since we are here, we spawn a thread and call the EnsureRegistrationOnCurrentUserWorker function.
+            ensureRegistrationThread = thread(EnsureRegistrationOnCurrentUserWorker);
+            ensureRegistrationThread.detach();
+        }
     }
 }
 
