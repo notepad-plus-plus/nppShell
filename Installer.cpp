@@ -19,7 +19,6 @@ using namespace NppShell::Registry;
 
 
 extern HMODULE g_module;
-extern thread ensureRegistrationThread;
 
 const wstring SparsePackageName = L"NotepadPlusPlus";
 constexpr int FirstWindows11BuildNumber = 22000;
@@ -394,7 +393,7 @@ void NppShell::Installer::EnsureRegistrationOnCurrentUser()
         // Explorer.exe only loads the DLL on the first time a user right-clicks a file
         // after that it stays in memory for the rest of their session.
         // Since we are here, we spawn a thread and call the EnsureRegistrationOnCurrentUserWorker function.
-        ensureRegistrationThread = thread(EnsureRegistrationOnCurrentUserWorker);
+        thread ensureRegistrationThread = thread(EnsureRegistrationOnCurrentUserWorker);
         ensureRegistrationThread.detach();
     }
 }
