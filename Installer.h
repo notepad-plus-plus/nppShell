@@ -3,7 +3,7 @@
 
 namespace NppShell::Installer
 {
-    HRESULT RegisterOldContextMenu();
+    HRESULT RegisterOldContextMenu(const wstring& dllName);
     HRESULT UnregisterOldContextMenu();
 
     HRESULT RegisterSparsePackage();
@@ -13,6 +13,7 @@ namespace NppShell::Installer
     HRESULT Uninstall();
 
     void EnsureRegistrationOnCurrentUser();
+    void EnsureCorrectFileName(const wstring& targetFileName);
 }
 
 STDAPI CleanupDll();

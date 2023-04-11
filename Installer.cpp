@@ -258,9 +258,9 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
     return S_OK;
 }
 
-HRESULT NppShell::Installer::RegisterOldContextMenu()
+HRESULT NppShell::Installer::RegisterOldContextMenu(const wstring& dllName)
 {
-    const wstring contextMenuFullName = GetContextMenuFullName();
+    const wstring contextMenuFullName = GetContextMenuPath() + L"\\" + dllName;
     const wstring guid = GetCLSIDString();
 
     // First we set the shell extension values.
@@ -292,6 +292,11 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
 
 HRESULT NppShell::Installer::Install()
 {
+    const wstring dllName = L"NppShell.dll";
+
+    // Ensure we have the correct filename, and fix it if we don't.
+    EnsureCorrectFileName(dllName);
+
     const bool isWindows11 = IsWindows11Installation();
 
     HRESULT result;
@@ -311,7 +316,7 @@ HRESULT NppShell::Installer::Install()
         result = RegisterSparsePackage();
     }
 
-    result = RegisterOldContextMenu();
+    result = RegisterOldContextMenu(dllName);
 
     // Ensure we schedule old files for removal on next reboot.
     MoveFileToTempAndScheduleDeletion(GetApplicationPath() + L"\\NppShell_01.dll", false);
@@ -399,11 +404,37 @@ void NppShell::Installer::EnsureRegistrationOnCurrentUser()
     }
 }
 
+void NppShell::Installer::EnsureCorrectFileName(const wstring& targetFileName)
+{
+    const wstring workingDirectory = GetContextMenuPath();
+    const wstring currentModuleName = GetContextMenuName();
+
+    // First we check if we have the correct name.
+    if (currentModuleName == targetFileName)
+    {
+        // The running DLL is already called NppShell.dll, so we just return.
+        return;
+    }
+
+    const wstring sourceFullName = workingDirectory + L"\\" + currentModuleName;
+    const wstring targetFullName = workingDirectory + L"\\" + targetFileName;
+
+    // Is there already a file called NppShell.dll
+    if (GetFileAttributesW(targetFullName.c_str()) != INVALID_FILE_ATTRIBUTES)
+    {
+        // There is, so we move it out of the way.
+        MoveFileToTempAndScheduleDeletion(targetFullName, true);
+    }
+
+    // When we get to here, we know that we have the wrong name, and there is no file taking up the target filename.
+    MoveFileExW(sourceFullName.c_str(), targetFullName.c_str(), MOVEFILE_REPLACE_EXISTING);
+}
+
 STDAPI CleanupDll()
 {
     // First we get the full path to this DLL.
     wstring currentFilePath(MAX_PATH, L'\0');
-    GetModuleFileName(g_module, &currentFilePath[0], MAX_PATH);
+    GetModuleFileNameW(g_module, &currentFilePath[0], MAX_PATH);
 
     // Then we get it moved out of the way and scheduled for deletion.
     return MoveFileToTempAndScheduleDeletion(currentFilePath, true);

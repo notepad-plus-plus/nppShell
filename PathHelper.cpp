@@ -6,6 +6,15 @@ using namespace std::filesystem;
 
 extern HMODULE g_module;
 
+const wstring GetModuleName(HMODULE hModule)
+{
+    wchar_t pathBuffer[FILENAME_MAX] = { 0 };
+    GetModuleFileNameW(hModule, pathBuffer, FILENAME_MAX);
+    PathStripPathW(pathBuffer);
+
+    return wstring(pathBuffer);
+}
+
 const path GetModulePath()
 {
     wchar_t pathBuffer[MAX_PATH] = { 0 };
@@ -25,19 +34,15 @@ const wstring NppShell::Helpers::GetContextMenuPath()
     return modulePath.parent_path().wstring();
 }
 
-const wstring NppShell::Helpers::GetContextMenuFullName()
+const wstring NppShell::Helpers::GetContextMenuName()
 {
-    path modulePath = GetModulePath();
-    return modulePath.wstring();
+    return GetModuleName(g_module);
 }
 
 const wstring NppShell::Helpers::GetExecutingModuleName()
 {
-    wchar_t pathBuffer[FILENAME_MAX] = { 0 };
-    GetModuleFileNameW(NULL, pathBuffer, FILENAME_MAX);
-    PathStripPathW(pathBuffer);
+    wstring moduleName = GetModuleName(NULL);
 
-    wstring moduleName(pathBuffer);
     transform(moduleName.begin(), moduleName.end(), moduleName.begin(), towlower);
 
     return moduleName;
