@@ -290,8 +290,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION VERSION_DIGITALVALUE
+ PRODUCTVERSION VERSION_DIGITALVALUE
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -308,12 +308,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Bjarke I. Pedersen gurli@gurlinet.dk"
             VALUE "FileDescription", "Notepad++ Context Menu"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", VERSION_VALUE
             VALUE "InternalName", "NppShell.dll"
             VALUE "LegalCopyright", "Copyleft 2023 by Bjarke I. Pedersen"
             VALUE "OriginalFilename", "NppShell.dll"
             VALUE "ProductName", "Notepad++"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", VERSION_VALUE
         END
     END
     BLOCK "VarFileInfo"
