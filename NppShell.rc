@@ -225,10 +225,30 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Открыть в Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редактировать в Notepad++"
 END
 
 #endif    // Russian (Russia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Ukrainian (Ukraine) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
+LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редагувати в Notepad++"
+END
+
+#endif    // Ukrainian (Ukraine) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
