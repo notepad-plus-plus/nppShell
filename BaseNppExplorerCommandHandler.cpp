@@ -125,13 +125,13 @@ IFACEMETHODIMP BaseNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArr
 
     IShellItem* psi = nullptr;
     LPWSTR itemName;
+    wstring filePathsArg;
 
     for (DWORD i = 0; i < count; ++i)
     {
         psiItemArray->GetItemAt(i, &psi);
         RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &itemName));
 
-        const wstring applicationName = GetNppExecutableFullPath();
         const wstring commandLine = GetCommandLine(itemName);
 
         // Cleanup itemName, since we are done with it.
@@ -143,24 +143,24 @@ IFACEMETHODIMP BaseNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArr
         // Release the IShellItem pointer, since we are done with it as well.
         psi->Release();
 
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
-
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
-
-        wchar_t* application = (LPWSTR)applicationName.c_str();
-        wchar_t* command = (LPWSTR)commandLine.c_str();
-
-        if (!CreateProcessW(application, command, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
-        {
-            return S_OK;
-        }
-
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
+        filePathsArg += commandLine;
+        filePathsArg += L" ";
     }
+
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (!CreateProcessW(GetNppExecutableFullPath().c_str(), (LPWSTR)filePathsArg.c_str(), nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
+    {
+        return S_OK;
+    }
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
 
     return S_OK;
 }
