@@ -124,27 +124,31 @@ IFACEMETHODIMP BaseNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArr
     RETURN_IF_FAILED(psiItemArray->GetCount(&count));
 
     IShellItem* psi = nullptr;
-    LPWSTR itemName;
-    wstring filePathsArg;
+    LPWSTR file2OpenPath;
+    
+    wstring appPath = L"\"";
+    appPath += GetNppExecutableFullPath().c_str();
+    appPath += L"\"";
+
+    wstring filePathsArg = appPath;
+    filePathsArg += L" ";
 
     for (DWORD i = 0; i < count; ++i)
     {
         psiItemArray->GetItemAt(i, &psi);
-        RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &itemName));
-
-        const wstring commandLine = GetCommandLine(itemName);
-
-        // Cleanup itemName, since we are done with it.
-        if (itemName)
-        {
-            CoTaskMemFree(itemName);
-        }
-
+        RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &file2OpenPath));
         // Release the IShellItem pointer, since we are done with it as well.
         psi->Release();
 
-        filePathsArg += commandLine;
-        filePathsArg += L" ";
+        filePathsArg += L"\"";
+        filePathsArg += file2OpenPath;
+        filePathsArg += L"\" ";
+
+        // Cleanup itemName, since we are done with it.
+        if (file2OpenPath)
+        {
+            CoTaskMemFree(file2OpenPath);
+        }
     }
 
     STARTUPINFO si;
