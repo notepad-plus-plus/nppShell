@@ -124,43 +124,47 @@ IFACEMETHODIMP BaseNppExplorerCommandHandler::Invoke(IShellItemArray* psiItemArr
     RETURN_IF_FAILED(psiItemArray->GetCount(&count));
 
     IShellItem* psi = nullptr;
-    LPWSTR itemName;
+    LPWSTR file2OpenPath;
+    
+    wstring appPath = L"\"";
+    appPath += GetNppExecutableFullPath().c_str();
+    appPath += L"\"";
+
+    wstring filePathsArg = appPath;
+    filePathsArg += L" ";
 
     for (DWORD i = 0; i < count; ++i)
     {
         psiItemArray->GetItemAt(i, &psi);
-        RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &itemName));
-
-        const wstring applicationName = GetNppExecutableFullPath();
-        const wstring commandLine = GetCommandLine(itemName);
-
-        // Cleanup itemName, since we are done with it.
-        if (itemName)
-        {
-            CoTaskMemFree(itemName);
-        }
-
+        RETURN_IF_FAILED(psi->GetDisplayName(SIGDN_FILESYSPATH, &file2OpenPath));
         // Release the IShellItem pointer, since we are done with it as well.
         psi->Release();
 
-        STARTUPINFO si;
-        PROCESS_INFORMATION pi;
+        filePathsArg += L"\"";
+        filePathsArg += file2OpenPath;
+        filePathsArg += L"\" ";
 
-        ZeroMemory(&si, sizeof(si));
-        si.cb = sizeof(si);
-        ZeroMemory(&pi, sizeof(pi));
-
-        wchar_t* application = (LPWSTR)applicationName.c_str();
-        wchar_t* command = (LPWSTR)commandLine.c_str();
-
-        if (!CreateProcessW(application, command, nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
+        // Cleanup itemName, since we are done with it.
+        if (file2OpenPath)
         {
-            return S_OK;
+            CoTaskMemFree(file2OpenPath);
         }
-
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
     }
+
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (!CreateProcessW(GetNppExecutableFullPath().c_str(), (LPWSTR)filePathsArg.c_str(), nullptr, nullptr, false, CREATE_NEW_PROCESS_GROUP, nullptr, nullptr, &si, &pi))
+    {
+        return S_OK;
+    }
+
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
 
     return S_OK;
 }
