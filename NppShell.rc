@@ -367,12 +367,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Bjarke I. Pedersen gurli@gurlinet.dk"
-            VALUE "FileDescription", "&Notepad++ Context Menu"
+            VALUE "FileDescription", "Notepad++ Context Menu"
             VALUE "FileVersion", VERSION_VALUE
             VALUE "InternalName", "NppShell.dll"
             VALUE "LegalCopyright", "Copyleft 2023 by Bjarke I. Pedersen"
             VALUE "OriginalFilename", "NppShell.dll"
-            VALUE "ProductName", "&Notepad++"
+            VALUE "ProductName", "Notepad++"
             VALUE "ProductVersion", VERSION_VALUE
         END
     END
