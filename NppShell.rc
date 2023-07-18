@@ -25,7 +25,7 @@ LANGUAGE LANG_TAMIL, SUBLANG_NEUTRAL
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Notepad++ பயன்படுத்தி தொகுக்க"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "&Notepad++ பயன்படுத்தி தொகுக்க"
 END
 
 #endif    // Tamil (Neutral) resources
@@ -45,7 +45,7 @@ LANGUAGE LANG_HINDI, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Notepad++ में एडिट करें"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "&Notepad++ में एडिट करें"
 END
 
 #endif    // Hindi (India) resources
@@ -65,7 +65,7 @@ LANGUAGE LANG_JAPANESE, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Notepad++ で編集"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "&Notepad++ で編集"
 END
 
 #endif    // Japanese (Japan) resources
@@ -85,7 +85,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_NEUTRAL
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "以 Notepad++ 编辑"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "以 &Notepad++ 编辑"
 END
 
 #endif    // Chinese (Simplified) resources
@@ -105,7 +105,7 @@ LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_TRADITIONAL
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "以 Notepad++ 編輯"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "以 &Notepad++ 編輯"
 END
 
 #endif    // Chinese (Traditional, Taiwan) resources
@@ -125,7 +125,7 @@ LANGUAGE LANG_CZECH, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editovat pomocí Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editovat pomocí &Notepad++"
 END
 
 #endif    // Czech (Czech Republic) resources
@@ -145,7 +145,7 @@ LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edytuj w Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edytuj w &Notepad++"
 END
 
 #endif    // Polish (Poland) resources
@@ -165,7 +165,7 @@ LANGUAGE LANG_CROATIAN, SUBLANG_CROATIAN_BOSNIA_HERZEGOVINA_LATIN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s &Notepad++"
 END
 
 #endif    // Croatian (Latin, Bosnia and Herzegovina) resources
@@ -185,7 +185,7 @@ LANGUAGE LANG_BOSNIAN, SUBLANG_BOSNIAN_BOSNIA_HERZEGOVINA_LATIN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s &Notepad++"
 END
 
 #endif    // Bosnian (Latin, Bosnia & Herzegovina) resources
@@ -205,7 +205,7 @@ LANGUAGE LANG_SERBIAN, SUBLANG_SERBIAN_BOSNIA_HERZEGOVINA_LATIN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Uredi s &Notepad++"
 END
 
 #endif    // Serbian (Latin, Bosnia & Herzegovina) resources
@@ -225,7 +225,7 @@ LANGUAGE LANG_BULGARIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редактиране с Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редактиране с &Notepad++"
 END
 
 #endif    // Bulgarian (Bulgaria) resources
@@ -245,7 +245,7 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редактировать в Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редактировать в &Notepad++"
 END
 
 #endif    // Russian (Russia) resources
@@ -265,7 +265,7 @@ LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редагувати в Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Редагувати в &Notepad++"
 END
 
 #endif    // Ukrainian (Ukraine) resources
@@ -285,7 +285,7 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Rediger med Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Rediger med &Notepad++"
 END
 
 #endif    // Danish (Denmark) resources
@@ -305,7 +305,7 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Mit Notepad++ bearbeiten"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Mit &Notepad++ bearbeiten"
 END
 
 #endif    // German (Germany) resources
@@ -367,12 +367,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Bjarke I. Pedersen gurli@gurlinet.dk"
-            VALUE "FileDescription", "Notepad++ Context Menu"
+            VALUE "FileDescription", "&Notepad++ Context Menu"
             VALUE "FileVersion", VERSION_VALUE
             VALUE "InternalName", "NppShell.dll"
             VALUE "LegalCopyright", "Copyleft 2023 by Bjarke I. Pedersen"
             VALUE "OriginalFilename", "NppShell.dll"
-            VALUE "ProductName", "Notepad++"
+            VALUE "ProductName", "&Notepad++"
             VALUE "ProductVersion", VERSION_VALUE
         END
     END
@@ -390,7 +390,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edit with Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edit with &Notepad++"
 END
 
 #endif    // English (United States) resources
@@ -410,7 +410,7 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Éditer avec Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Éditer avec &Notepad++"
 END
 
 #endif    // French (France) resources
@@ -430,7 +430,7 @@ LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Modifica con Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Modifica con &Notepad++"
 END
 
 #endif    // Italian (Italy) resources
@@ -450,7 +450,7 @@ LANGUAGE LANG_PORTUGUESE, SUBLANG_PORTUGUESE_BRAZILIAN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar com o Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar com o &Notepad++"
 END
 
 #endif    // Portuguese (Brazil) resources
@@ -470,7 +470,7 @@ LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Redigera med Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Redigera med &Notepad++"
 END
 
 #endif    // Swedish (Sweden) resources
@@ -490,7 +490,7 @@ LANGUAGE LANG_INDONESIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edit dengan Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Edit dengan &Notepad++"
 END
 
 #endif    // Indonesian (Indonesia) resources
@@ -510,7 +510,7 @@ LANGUAGE LANG_GALICIAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar con Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar con &Notepad++"
 END
 
 #endif    // Galician (Galician) resources
@@ -530,7 +530,7 @@ LANGUAGE LANG_CORSICAN, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Mudificà cù Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Mudificà cù &Notepad++"
 END
 
 #endif    // Corsican (France) resources
@@ -550,7 +550,7 @@ LANGUAGE LANG_PORTUGUESE, SUBLANG_PORTUGUESE
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar com o Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar com o &Notepad++"
 END
 
 #endif    // Portuguese (Portugal) resources
@@ -570,7 +570,7 @@ LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar con Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Editar con &Notepad++"
 END
 
 #endif    // Spanish (Spain, International Sort) resources
@@ -590,7 +590,7 @@ LANGUAGE LANG_GREEK, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Επεξεργασία στο Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Επεξεργασία στο &Notepad++"
 END
 
 #endif    // Greek (Greece) resources
@@ -610,7 +610,7 @@ LANGUAGE LANG_VIETNAMESE, SUBLANG_DEFAULT
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Sửa bằng Notepad++"
+    IDS_EDIT_WITH_NOTEPADPLUSPLUS "Sửa bằng &Notepad++"
 END
 
 #endif    // Vietnamese (Vietnam) resources
