@@ -15,7 +15,7 @@ LoggingHelper::LoggingHelper()
     }
 
     const wstring logFileFolder = CreateAppDataFolder();
-    logFilePath = logFileFolder + L"\\NppShell.txt";
+    logFilePath = logFileFolder + L"\\NppShell.log";
 }
 
 void LoggingHelper::LogMessage(const wstring& source, const wstring& message)
