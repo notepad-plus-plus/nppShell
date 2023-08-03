@@ -4,8 +4,8 @@
 //
 #define IDS_EDIT_WITH_NOTEPADPLUSPLUS   101
 
-#define VERSION_VALUE "1.1"
-#define VERSION_DIGITALVALUE 1,1,0,0
+#define VERSION_VALUE "1.2"
+#define VERSION_DIGITALVALUE 1,2,0,0
 
 // Next default values for new objects
 // 
