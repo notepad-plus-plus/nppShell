@@ -14,8 +14,8 @@ namespace NppShell::Helpers
         SharedState();
         ~SharedState();
 
-        CounterState GetState() const;
-        void SetState(CounterState state);
+        CounterState GetState(const wstring caller) const;
+        void SetState(const wstring caller, const CounterState state);
 
     private:
         HANDLE hFileMapping = 0;
