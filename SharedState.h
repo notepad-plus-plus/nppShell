@@ -18,8 +18,8 @@ namespace NppShell::Helpers
         void SetState(CounterState state);
 
     private:
-        HANDLE hFileMapping;
-        HANDLE hMutex;
-        CounterState* pState;
+        HANDLE hFileMapping = 0;
+        HANDLE hMutex = 0;
+        CounterState* pState = 0;
     };
 }
