@@ -48,8 +48,12 @@ SharedState::~SharedState()
 
 CounterState SharedState::GetState(const wstring caller) const
 {
+    WaitForSingleObject(hMutex, INFINITE);
+    CounterState value = *pState;
     g_loggingHelper.LogMessage(L"SharedState::GetState", L"Get shared state by caller: " + caller);
-    return *pState;
+    ReleaseMutex(hMutex);
+
+    return value;
 }
 
 void SharedState::SetState(const wstring caller, const CounterState state)
