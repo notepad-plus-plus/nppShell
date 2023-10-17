@@ -23,9 +23,9 @@ const EXPCMDSTATE ModernEditWithNppExplorerCommandHandler::State(IShellItemArray
 {
     UNREFERENCED_PARAMETER(psiItemArray);
 
-    state->SetState(Set);
+    state->SetState(L"ModernEditWithNppExplorerCommandHandler", Set);
 
-    g_loggingHelper.LogMessage(L"ModernEditWithNppExplorerCommandHandler::State", L"Current state: " + std::to_wstring(state->GetState()));
+    g_loggingHelper.LogMessage(L"ModernEditWithNppExplorerCommandHandler::State", L"Current state: " + std::to_wstring(state->GetState(L"ModernEditWithNppExplorerCommandHandler")));
 
     return ECS_ENABLED;
 }

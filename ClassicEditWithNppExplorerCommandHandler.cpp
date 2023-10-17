@@ -24,8 +24,8 @@ const EXPCMDSTATE ClassicEditWithNppExplorerCommandHandler::State(IShellItemArra
     UNREFERENCED_PARAMETER(psiItemArray);
 
     // First we get the current state, before we clear it.
-    CounterState currentState = state->GetState();
-    state->SetState(NotSet);
+    CounterState currentState = state->GetState(L"ClassicEditWithNppExplorerCommandHandler");
+    state->SetState(L"ClassicEditWithNppExplorerCommandHandler", NotSet);
 
     g_loggingHelper.LogMessage(L"ClassicEditWithNppExplorerCommandHandler::State", L"Current state: " + std::to_wstring(currentState));
 

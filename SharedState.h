@@ -14,12 +14,12 @@ namespace NppShell::Helpers
         SharedState();
         ~SharedState();
 
-        CounterState GetState() const;
-        void SetState(CounterState state);
+        CounterState GetState(const wstring caller) const;
+        void SetState(const wstring caller, const CounterState state);
 
     private:
-        HANDLE hFileMapping;
-        HANDLE hMutex;
-        CounterState* pState;
+        HANDLE hFileMapping = 0;
+        HANDLE hMutex = 0;
+        CounterState* pState = 0;
     };
 }

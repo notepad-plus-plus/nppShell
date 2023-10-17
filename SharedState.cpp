@@ -46,15 +46,20 @@ SharedState::~SharedState()
     CloseHandle(hFileMapping);
 }
 
-CounterState SharedState::GetState() const
+CounterState SharedState::GetState(const wstring caller) const
 {
-    return *pState;
+    WaitForSingleObject(hMutex, INFINITE);
+    CounterState value = *pState;
+    g_loggingHelper.LogMessage(L"SharedState::GetState", L"Get shared state by caller: " + caller);
+    ReleaseMutex(hMutex);
+
+    return value;
 }
 
-void SharedState::SetState(CounterState state)
+void SharedState::SetState(const wstring caller, const CounterState state)
 {
     WaitForSingleObject(hMutex, INFINITE);
     *pState = state;
-    g_loggingHelper.LogMessage(L"SharedState::SetState", L"Set shared state to: " + to_wstring(state));
+    g_loggingHelper.LogMessage(L"SharedState::SetState", L"Set shared state to: " + to_wstring(state) + L" by caller: " + caller);
     ReleaseMutex(hMutex);
 }
