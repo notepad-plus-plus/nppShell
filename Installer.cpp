@@ -209,7 +209,9 @@ Package GetSparsePackage()
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Otherwise we will get an unhandled exception later due to HRESULT 0x8007043c (ERROR_NOT_SAFEBOOT_SERVICE).
+    }
 
     PackageManager packageManager;
     AddPackageOptions options;
@@ -236,7 +238,9 @@ HRESULT NppShell::Installer::RegisterSparsePackage()
 HRESULT NppShell::Installer::UnregisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Only to speed up things a bit here. (code in the following GetSparsePackage() is safe against the ERROR_NOT_SAFEBOOT_SERVICE)
+    }
 
     PackageManager packageManager;
     IIterable<Package> packages;
@@ -298,7 +302,9 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
 void ReRegisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return; // Sparse package reg/unreg cannot be done in the Windows OS SafeMode.
+    }
 
     winrt::init_apartment();
 
