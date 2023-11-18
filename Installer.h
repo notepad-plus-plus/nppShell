@@ -6,7 +6,8 @@ namespace NppShell::Installer
     HRESULT RegisterOldContextMenu();
     HRESULT UnregisterOldContextMenu();
 
-    HRESULT RegisterSparsePackage();
+    HRESULT RegisterSparsePackageAllUsers();
+    HRESULT RegisterSparsePackageCurrentUser();
     HRESULT UnregisterSparsePackage();
 
     HRESULT Install();
