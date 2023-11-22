@@ -167,16 +167,16 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTe
     return S_OK;
 }
 
-void ResetAclPermissionsOnApplicationFolder()
+void ResetAclPermissionsOnContextMenuFolder()
 {
-    // First we get the path where Notepad++ is installed.
-    const wstring applicationPath = GetApplicationPath();
+    // First we get the path where Notepad++ context menu is installed.
+    const wstring contextMenuPath = GetContextMenuPath();
 
     // Create a new AclHelper
     AclHelper aclHelper;
 
-    // Reset the ACL of the folder where Notepad++ is installed.
-    aclHelper.ResetAcl(applicationPath);
+    // Reset the ACL of the folder where Notepad++ context menu is installed.
+    aclHelper.ResetAcl(contextMenuPath);
 }
 
 Package GetSparsePackage()
@@ -262,7 +262,7 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
     }
 
     // After unregistering the sparse package, we reset the folder permissions of the folder where we are installed.
-    ResetAclPermissionsOnApplicationFolder();
+    ResetAclPermissionsOnContextMenuFolder();
 
     return S_OK;
 }
