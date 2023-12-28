@@ -7,10 +7,9 @@ jobs:
 
     runs-on: windows-latest
     strategy:
-      max-parallel: 6
       matrix:
         build_platform: [x64, Win32, ARM64]
-        
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
@@ -25,22 +24,34 @@ jobs:
       working-directory: .
       run: nuget restore NppShell.sln
 
-    - name: MSBuild of plugin dll
+    - name: MSBuild of dll and msix
       working-directory: .
       run: |
            msbuild NppShell.sln /m /p:configuration="Debug" /p:platform="${{ matrix.build_platform }}"
            msbuild NppShell.sln /m /p:configuration="Release" /p:platform="${{ matrix.build_platform }}"
 
+    - name: Archive artifacts for win32
+      if: matrix.build_platform == 'Win32'
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifacts_win32
+          path: |
+                Release\NppShell.x86.dll
+
     - name: Archive artifacts for x64
       if: matrix.build_platform == 'x64'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-          name: plugin_dll_x64
-          path: ${{ matrix.build_platform }}\Release\NppShell.msix
+          name: artifacts_x64
+          path: |
+                ${{ matrix.build_platform }}\Release\NppShell.x64.dll
+                ${{ matrix.build_platform }}\Release\NppShell.msix
 
     - name: Archive artifacts for ARM64
       if: matrix.build_platform == 'ARM64'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-          name: plugin_dll_arm64
-          path: ${{ matrix.build_platform }}\Release\NppShell.msix
+          name: artifacts_arm64
+          path: |
+                ${{ matrix.build_platform }}\Release\NppShell.arm64.dll
+                ${{ matrix.build_platform }}\Release\NppShell.msix
