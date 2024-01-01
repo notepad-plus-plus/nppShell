@@ -33,14 +33,14 @@ jobs:
 
     - name: Archive artifacts for x64
       if: matrix.build_platform == 'x64'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: plugin_dll_x64
           path: ${{ matrix.build_platform }}\Release\NppShell.msix
 
     - name: Archive artifacts for ARM64
       if: matrix.build_platform == 'ARM64'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
           name: plugin_dll_arm64
           path: ${{ matrix.build_platform }}\Release\NppShell.msix
