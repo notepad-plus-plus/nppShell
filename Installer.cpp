@@ -167,26 +167,33 @@ HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTe
     return S_OK;
 }
 
-void ResetAclPermissionsOnApplicationFolder()
+void ResetAclPermissionsOnContextMenuFolder()
 {
-    // First we get the path where Notepad++ is installed.
-    const wstring applicationPath = GetApplicationPath();
+    // First we get the path where Notepad++ context menu is installed.
+    const wstring contextMenuPath = GetContextMenuPath();
 
     // Create a new AclHelper
     AclHelper aclHelper;
 
-    // Reset the ACL of the folder where Notepad++ is installed.
-    aclHelper.ResetAcl(applicationPath);
+    // Reset the ACL of the folder where Notepad++ context menu is installed.
+    aclHelper.ResetAcl(contextMenuPath);
 }
 
-Package GetSparsePackage()
+Package GetSparsePackage(bool allUsers)
 {
     PackageManager packageManager;
     IIterable<Package> packages;
 
     try
     {
-        packages = packageManager.FindPackagesForUser(L"");
+        if (allUsers)
+        {
+            packages = packageManager.FindPackages();
+        }
+        else
+        {
+            packages = packageManager.FindPackagesForUser(L"");
+        }
     }
     catch (winrt::hresult_error)
     {
@@ -206,10 +213,57 @@ Package GetSparsePackage()
     return NULL;
 }
 
-HRESULT NppShell::Installer::RegisterSparsePackage()
+HRESULT NppShell::Installer::RegisterSparsePackageAllUsers()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Otherwise we will get an unhandled exception later due to HRESULT 0x8007043c (ERROR_NOT_SAFEBOOT_SERVICE).
+    }
+
+    PackageManager packageManager;
+    StagePackageOptions options;
+
+    const wstring externalLocation = GetContextMenuPath();
+    const wstring sparsePkgPath = externalLocation + L"\\NppShell.msix";
+
+    Uri externalUri(externalLocation);
+    Uri packageUri(sparsePkgPath);
+
+    options.ExternalLocationUri(externalUri);
+
+    auto deploymentOperation = packageManager.StagePackageByUriAsync(packageUri, options);
+    auto deployResult = deploymentOperation.get();
+
+    if (!SUCCEEDED(deployResult.ExtendedErrorCode()))
+    {
+        return deployResult.ExtendedErrorCode();
+    }
+
+    Package package = GetSparsePackage(true);
+    if (package == NULL)
+    {
+        return S_FALSE;
+    }
+
+    winrt::hstring familyName = package.Id().FamilyName();
+
+    deploymentOperation = packageManager.ProvisionPackageForAllUsersAsync(familyName);
+    deployResult = deploymentOperation.get();
+
+    if (!SUCCEEDED(deployResult.ExtendedErrorCode()))
+    {
+        return deployResult.ExtendedErrorCode();
+    }
+
+    return S_OK;
+}
+
+HRESULT NppShell::Installer::RegisterSparsePackageCurrentUser()
+{
+    if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
+        return S_FALSE; // Otherwise we will get an unhandled exception later due to HRESULT 0x8007043c (ERROR_NOT_SAFEBOOT_SERVICE).
+    }
 
     PackageManager packageManager;
     AddPackageOptions options;
@@ -236,12 +290,14 @@ HRESULT NppShell::Installer::RegisterSparsePackage()
 HRESULT NppShell::Installer::UnregisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Only to speed up things a bit here. (code in the following GetSparsePackage() is safe against the ERROR_NOT_SAFEBOOT_SERVICE)
+    }
 
     PackageManager packageManager;
     IIterable<Package> packages;
 
-    Package package = GetSparsePackage();
+    Package package = GetSparsePackage(true);
     
     if (package == NULL)
     {
@@ -249,7 +305,7 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
     }
 
     winrt::hstring fullName = package.Id().FullName();
-    auto deploymentOperation = packageManager.RemovePackageAsync(fullName, RemovalOptions::None);
+    auto deploymentOperation = packageManager.RemovePackageAsync(fullName, RemovalOptions::RemoveForAllUsers);
     auto deployResult = deploymentOperation.get();
 
     if (!SUCCEEDED(deployResult.ExtendedErrorCode()))
@@ -258,7 +314,7 @@ HRESULT NppShell::Installer::UnregisterSparsePackage()
     }
 
     // After unregistering the sparse package, we reset the folder permissions of the folder where we are installed.
-    ResetAclPermissionsOnApplicationFolder();
+    ResetAclPermissionsOnContextMenuFolder();
 
     return S_OK;
 }
@@ -298,7 +354,9 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
 void ReRegisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return; // Sparse package reg/unreg cannot be done in the Windows OS SafeMode.
+    }
 
     winrt::init_apartment();
 
@@ -306,7 +364,8 @@ void ReRegisterSparsePackage()
     UnregisterSparsePackage();
 
     // And then we register it again.
-    RegisterSparsePackage();
+    RegisterSparsePackageAllUsers();
+    RegisterSparsePackageCurrentUser();
 }
 
 HRESULT NppShell::Installer::Install()
@@ -387,13 +446,13 @@ void EnsureRegistrationOnCurrentUserWorker()
     winrt::init_apartment();
 
     // Get the package to check if it is already installed for the current user.
-    Package existingPackage = GetSparsePackage();
+    Package existingPackage = GetSparsePackage(false);
 
     if (existingPackage == NULL)
     {
         // The package is not installed for the current user - but we know that Notepad++ is.
         // If it wasn't, this code wouldn't be running, so it is safe to just register the package.
-        RegisterSparsePackage();
+        RegisterSparsePackageCurrentUser();
 
         // Finally we notify the shell that we have made changes, so it reloads the right click menu items.
         SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
