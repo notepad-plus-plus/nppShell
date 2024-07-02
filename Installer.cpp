@@ -129,6 +129,17 @@ void inline CleanupHack()
 
 HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTempDirectory)
 {
+    // Recommended way to check if a file exist:
+    // https://devblogs.microsoft.com/oldnewthing/20071023-00/?p=24713
+    DWORD fileAttributes = GetFileAttributesW(filePath.c_str());
+
+    if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+    {
+        // If GetFileAttributes return INVALID_FILE_ATTRIBUTES, that means the file doesn't exist.
+        // In that case, we shouldn't try and schedule a deletion of it.
+        return S_OK;
+    }
+
     wstring tempPath(MAX_PATH, L'\0');
     wstring tempFileName(MAX_PATH, L'\0');
 
@@ -209,7 +220,9 @@ Package GetSparsePackage()
 HRESULT NppShell::Installer::RegisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Otherwise we will get an unhandled exception later due to HRESULT 0x8007043c (ERROR_NOT_SAFEBOOT_SERVICE).
+    }
 
     PackageManager packageManager;
     AddPackageOptions options;
@@ -236,7 +249,9 @@ HRESULT NppShell::Installer::RegisterSparsePackage()
 HRESULT NppShell::Installer::UnregisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return S_FALSE; // Only to speed up things a bit here. (code in the following GetSparsePackage() is safe against the ERROR_NOT_SAFEBOOT_SERVICE)
+    }
 
     PackageManager packageManager;
     IIterable<Package> packages;
@@ -298,7 +313,9 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
 void ReRegisterSparsePackage()
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
+    {
         return; // Sparse package reg/unreg cannot be done in the Windows OS SafeMode.
+    }
 
     winrt::init_apartment();
 
