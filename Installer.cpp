@@ -129,6 +129,17 @@ void inline CleanupHack()
 
 HRESULT MoveFileToTempAndScheduleDeletion(const wstring& filePath, bool moveToTempDirectory)
 {
+    // Recommended way to check if a file exist:
+    // https://devblogs.microsoft.com/oldnewthing/20071023-00/?p=24713
+    DWORD fileAttributes = GetFileAttributesW(filePath.c_str());
+
+    if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+    {
+        // If GetFileAttributes return INVALID_FILE_ATTRIBUTES, that means the file doesn't exist.
+        // In that case, we shouldn't try and schedule a deletion of it.
+        return S_OK;
+    }
+
     wstring tempPath(MAX_PATH, L'\0');
     wstring tempFileName(MAX_PATH, L'\0');
 
