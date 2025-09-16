@@ -6,6 +6,11 @@ jobs:
   build:
 
     runs-on: windows-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
     strategy:
       matrix:
         build_platform: [x64, Win32, ARM64]
@@ -28,6 +33,26 @@ jobs:
       working-directory: .
       run: |
            msbuild NppShell.sln /m /p:configuration="Release" /p:platform="${{ matrix.build_platform }}"
+
+    - name: Azure CLI login with federated credential
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Install sign cli
+      run: dotnet tool install --global sign --prerelease
+
+    - name: Sign executables and libraries
+      run: sign code trusted-signing `
+        --trusted-signing-account ${{ secrets.TRUSTED_SIGNING_ACCOUNT_NAME }} `
+        --trusted-signing-certificate-profile ${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }} `
+        --trusted-signing-endpoint https://weu.codesigning.azure.net `
+        --azure-credential-type azure-cli `
+        --verbosity information `
+        **/*.dll **/*.msix
+
 
     - name: Archive artifacts for win32
       if: matrix.build_platform == 'Win32'
