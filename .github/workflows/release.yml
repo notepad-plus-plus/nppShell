@@ -1,0 +1,56 @@
+name: release
+
+on: workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        build_platform: [x64, Win32, ARM64]
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v5
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet.exe
+      uses: nuget/setup-nuget@v2
+
+    - name: Restore
+      working-directory: .
+      run: nuget restore NppShell.sln
+
+    - name: MSBuild of dll and msix
+      working-directory: .
+      run: |
+           msbuild NppShell.sln /m /p:configuration="Release" /p:platform="${{ matrix.build_platform }}"
+
+    - name: Archive artifacts for win32
+      if: matrix.build_platform == 'Win32'
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifacts_win32
+          path: |
+                Release\NppShell.x86.dll
+
+    - name: Archive artifacts for x64
+      if: matrix.build_platform == 'x64'
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifacts_x64
+          path: |
+                ${{ matrix.build_platform }}\Release\NppShell.x64.dll
+                ${{ matrix.build_platform }}\Release\NppShell.msix
+
+    - name: Archive artifacts for ARM64
+      if: matrix.build_platform == 'ARM64'
+      uses: actions/upload-artifact@v4
+      with:
+          name: artifacts_arm64
+          path: |
+                ${{ matrix.build_platform }}\Release\NppShell.arm64.dll
+                ${{ matrix.build_platform }}\Release\NppShell.msix
