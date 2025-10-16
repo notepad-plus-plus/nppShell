@@ -11,7 +11,7 @@
   xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   IgnorableNamespaces="uap uap2 uap3 rescap desktop desktop4 desktop5 uap10 com">
-  <Identity Name="NotepadPlusPlus" ProcessorArchitecture="neutral" Publisher="E=don.h@free.fr, CN=&quot;Notepad++&quot;, O=&quot;Notepad++&quot;, L=Saint Cloud, S=Ile-de-France, C=FR" Version="1.0.0.0" />
+  <Identity Name="NotepadPlusPlus" ProcessorArchitecture="neutral" Publisher="E=don.h@free.fr, CN=&quot;NOTEPAD++&quot;, O=&quot;NOTEPAD++&quot;, L=Paris, S=Île-de-France, C=FR" Version="1.0.0.0" />
   <Properties>
     <DisplayName>Notepad++</DisplayName>
     <PublisherDisplayName>Notepad++</PublisherDisplayName>
