@@ -21,7 +21,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
     {
         case DLL_PROCESS_ATTACH:
             g_module = hModule;
-            NppShell::Installer::EnsureRegistrationOnCurrentUser();
+            try
+            {
+                NppShell::Installer::EnsureRegistrationOnCurrentUser();
+            }
+            catch (...)
+            {
+                // Never crash process attach due to optional registration checks.
+                g_loggingHelper.LogMessage(L"DllMain", L"Unknown exception during EnsureRegistrationOnCurrentUser.");
+            }
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
@@ -34,12 +42,62 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 STDAPI DllRegisterServer()
 {
-    return NppShell::Installer::Install();
+    try
+    {
+        return NppShell::Installer::Install();
+    }
+    catch (const winrt::hresult_error& ex)
+    {
+        g_loggingHelper.LogMessage(L"DllRegisterServer", L"WinRT exception: " + LoggingHelper::FormatHResult(ex.code()));
+        return ex.code();
+    }
+    catch (const exception& ex)
+    {
+        wstring whatMessage;
+        if (ex.what() != nullptr)
+        {
+            const string message(ex.what());
+            whatMessage.assign(message.begin(), message.end());
+        }
+
+        g_loggingHelper.LogMessage(L"DllRegisterServer", L"std::exception: " + whatMessage);
+        return E_FAIL;
+    }
+    catch (...)
+    {
+        g_loggingHelper.LogMessage(L"DllRegisterServer", L"Unknown exception.");
+        return E_FAIL;
+    }
 }
 
 STDAPI DllUnregisterServer()
 {
-    return NppShell::Installer::Uninstall();
+    try
+    {
+        return NppShell::Installer::Uninstall();
+    }
+    catch (const winrt::hresult_error& ex)
+    {
+        g_loggingHelper.LogMessage(L"DllUnregisterServer", L"WinRT exception: " + LoggingHelper::FormatHResult(ex.code()));
+        return ex.code();
+    }
+    catch (const exception& ex)
+    {
+        wstring whatMessage;
+        if (ex.what() != nullptr)
+        {
+            const string message(ex.what());
+            whatMessage.assign(message.begin(), message.end());
+        }
+
+        g_loggingHelper.LogMessage(L"DllUnregisterServer", L"std::exception: " + whatMessage);
+        return E_FAIL;
+    }
+    catch (...)
+    {
+        g_loggingHelper.LogMessage(L"DllUnregisterServer", L"Unknown exception.");
+        return E_FAIL;
+    }
 }
 
 __control_entrypoint(DllExport)

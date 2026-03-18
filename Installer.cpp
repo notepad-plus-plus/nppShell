@@ -5,6 +5,9 @@
 #include "PathHelper.h"
 #include "AclHelper.h"
 #include "RegistryKey.h"
+#include "LoggingHelper.h"
+
+#include <future>
 
 #define GUID_STRING_SIZE 40
 
@@ -19,6 +22,7 @@ using namespace NppShell::Registry;
 
 
 extern HMODULE g_module;
+extern LoggingHelper g_loggingHelper;
 
 const wstring SparsePackageName = L"NotepadPlusPlus";
 constexpr int FirstWindows11BuildNumber = 22000;
@@ -310,20 +314,45 @@ HRESULT NppShell::Installer::UnregisterOldContextMenu()
     return S_OK;
 }
 
-void ReRegisterSparsePackage()
+HRESULT ReRegisterSparsePackage() noexcept
 {
     if (::GetSystemMetrics(SM_CLEANBOOT) > 0)
     {
-        return; // Sparse package reg/unreg cannot be done in the Windows OS SafeMode.
+        return S_FALSE; // Sparse package reg/unreg cannot be done in the Windows OS SafeMode.
     }
 
-    winrt::init_apartment();
+    try
+    {
+        winrt::init_apartment();
 
-    // Since we are on Windows 11, we unregister the sparse package as well.
-    UnregisterSparsePackage();
+        // Since we are on Windows 11, we unregister the sparse package as well.
+        UnregisterSparsePackage();
 
-    // And then we register it again.
-    RegisterSparsePackage();
+        // And then we register it again.
+        return RegisterSparsePackage();
+    }
+    catch (const winrt::hresult_error& ex)
+    {
+        g_loggingHelper.LogMessage(L"ReRegisterSparsePackage", L"WinRT exception: " + LoggingHelper::FormatHResult(ex.code()));
+        return ex.code();
+    }
+    catch (const exception& ex)
+    {
+        wstring whatMessage;
+        if (ex.what() != nullptr)
+        {
+            const string message(ex.what());
+            whatMessage.assign(message.begin(), message.end());
+        }
+
+        g_loggingHelper.LogMessage(L"ReRegisterSparsePackage", L"std::exception: " + whatMessage);
+        return E_FAIL;
+    }
+    catch (...)
+    {
+        g_loggingHelper.LogMessage(L"ReRegisterSparsePackage", L"Unknown exception.");
+        return E_FAIL;
+    }
 }
 
 HRESULT NppShell::Installer::Install()
@@ -331,6 +360,7 @@ HRESULT NppShell::Installer::Install()
     const bool isWindows11 = IsWindows11Installation();
 
     HRESULT result;
+    HRESULT sparsePackageResult = S_OK;
 
     // Clean up the 8.5 Windows 11 hack if present.
     CleanupHack();
@@ -341,8 +371,19 @@ HRESULT NppShell::Installer::Install()
         UnregisterOldContextMenu();
 
         // To register the sparse package, we need to do it on another thread due to WinRT requirements.
-        thread reRegisterThread(ReRegisterSparsePackage);
+        promise<HRESULT> sparseRegistrationPromise;
+        future<HRESULT> sparseRegistrationFuture = sparseRegistrationPromise.get_future();
+
+        thread reRegisterThread([&sparseRegistrationPromise]() noexcept {
+            sparseRegistrationPromise.set_value(ReRegisterSparsePackage());
+        });
         reRegisterThread.join();
+
+        sparsePackageResult = sparseRegistrationFuture.get();
+        if (FAILED(sparsePackageResult))
+        {
+            g_loggingHelper.LogMessage(L"Installer::Install", L"Sparse package registration failed: " + LoggingHelper::FormatHResult(sparsePackageResult));
+        }
     }
 
     result = RegisterOldContextMenu();
@@ -398,22 +439,44 @@ HRESULT NppShell::Installer::Uninstall()
     return S_OK;
 }
 
-void EnsureRegistrationOnCurrentUserWorker()
+void EnsureRegistrationOnCurrentUserWorker() noexcept
 {
-    // Initialize the WinRT apartment.
-    winrt::init_apartment();
-
-    // Get the package to check if it is already installed for the current user.
-    Package existingPackage = GetSparsePackage();
-
-    if (existingPackage == NULL)
+    try
     {
-        // The package is not installed for the current user - but we know that Notepad++ is.
-        // If it wasn't, this code wouldn't be running, so it is safe to just register the package.
-        RegisterSparsePackage();
+        // Initialize the WinRT apartment.
+        winrt::init_apartment();
 
-        // Finally we notify the shell that we have made changes, so it reloads the right click menu items.
-        SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+        // Get the package to check if it is already installed for the current user.
+        Package existingPackage = GetSparsePackage();
+
+        if (existingPackage == NULL)
+        {
+            // The package is not installed for the current user - but we know that Notepad++ is.
+            // If it wasn't, this code wouldn't be running, so it is safe to just register the package.
+            RegisterSparsePackage();
+
+            // Finally we notify the shell that we have made changes, so it reloads the right click menu items.
+            SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+        }
+    }
+    catch (const winrt::hresult_error& ex)
+    {
+        g_loggingHelper.LogMessage(L"EnsureRegistrationOnCurrentUserWorker", L"WinRT exception: " + LoggingHelper::FormatHResult(ex.code()));
+    }
+    catch (const exception& ex)
+    {
+        wstring whatMessage;
+        if (ex.what() != nullptr)
+        {
+            const string message(ex.what());
+            whatMessage.assign(message.begin(), message.end());
+        }
+
+        g_loggingHelper.LogMessage(L"EnsureRegistrationOnCurrentUserWorker", L"std::exception: " + whatMessage);
+    }
+    catch (...)
+    {
+        g_loggingHelper.LogMessage(L"EnsureRegistrationOnCurrentUserWorker", L"Unknown exception.");
     }
 }
 

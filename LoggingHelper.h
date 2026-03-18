@@ -7,6 +7,7 @@ namespace NppShell::Helpers
     public:
         LoggingHelper();
         void LogMessage(const wstring& source, const wstring& message);
+        static wstring FormatHResult(HRESULT hr);
 
     private:
         wstring GetRoamingAppDataFolderPath();

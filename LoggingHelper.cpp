@@ -115,6 +115,13 @@ wstring LoggingHelper::GetTimestamp()
     return wstring(buffer);
 }
 
+wstring LoggingHelper::FormatHResult(HRESULT hr)
+{
+    wchar_t buffer[16];
+    swprintf_s(buffer, L"0x%08X", static_cast<unsigned int>(hr));
+    return wstring(buffer);
+}
+
 bool LoggingHelper::IsAppDataLoggingEnabled()
 {
     const wstring environmentVariableName = L"NPPSHELL_LOGGING_ENABLED";
